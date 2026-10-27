@@ -79,6 +79,7 @@ export async function setDataRequestStatus(admin: User, id: string, status: "ope
 const pageLimit = (n: unknown) => Math.min(200, Math.max(1, Number(n) || 50));
 
 export const adminLists = {
+  users: () => db.select({ id: schema.users.id, role: schema.users.role, displayName: schema.users.displayName, phoneE164: schema.users.phoneE164 }).from(schema.users).orderBy(desc(schema.users.createdAt)).limit(200),
   venues: (status?: string) => db.select().from(schema.venues).where(status ? sql`${schema.venues.status} = ${status}` : undefined).orderBy(desc(schema.venues.createdAt)).limit(200),
   events: (status?: string) => db.select().from(schema.events).where(status ? sql`${schema.events.status} = ${status}` : undefined).orderBy(desc(schema.events.createdAt)).limit(200),
   talents: (status?: string) => db.select().from(schema.talentProfiles).where(status ? sql`${schema.talentProfiles.status} = ${status}` : undefined).orderBy(desc(schema.talentProfiles.createdAt)).limit(200),

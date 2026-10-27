@@ -1,0 +1,69 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: drnk_test }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/drnk_test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/drnk_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - name: Unit and integration tests (real Postgres)
+        run: npm test
+      - name: Dependency audit (production deps)
+        run: npm audit --omit=dev --audit-level=high
+      - name: Production build
+        run: npm run build
+
+  e2e:
+    needs: verify
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: drnk_e2e }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      E2E_DATABASE_URL: postgres://postgres:postgres@localhost:5432/drnk_e2e
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/drnk_e2e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npm run db:migrate
+      - run: npm run db:seed
+      - name: HTTP smoke test against the production build
+        run: |
+          APP_ENV=development APP_URL=http://localhost:3100 OTP_PROVIDER=dev PAYMENT_PROVIDER=fake-sandbox RAZORPAY_WEBHOOK_SECRET=ci_not_real npx next start -p 3100 &
+          SERVER_PID=$!
+          for i in $(seq 1 30); do curl -sf http://localhost:3100/api/health && break; sleep 1; done
+          BASE_URL=http://localhost:3100 npx tsx scripts/smoke.ts
+          kill $SERVER_PID
+      - name: Playwright e2e
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: playwright-report, path: playwright-report }
+
+# Releases to staging/production are NOT triggered from here. They are manual, gated promotions (docs/DEPLOYMENT_RUNBOOK.md).

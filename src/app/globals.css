@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+@theme {
+  --color-char: #1c1b1a;
+  --color-smoke: #272624;
+  --color-ash: #9a958d;
+  --color-paper: #f6f4f0;
+  --color-ember: #b3261e;
+  --color-ember-hi: #cf3a31;
+  --color-brass: #c2a26a;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html { color-scheme: dark; }
+body { background: var(--color-char); color: var(--color-paper); font-family: var(--font-sans); }
+
+:focus-visible { outline: 2px solid var(--color-brass); outline-offset: 2px; }
+
+/* Ticket stub: the one memorable shape. Notches are cut with radial masks, no extra markup. */
+.stub {
+  background: var(--color-smoke);
+  --notch: 9px;
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat;
+  mask:
+    radial-gradient(circle var(--notch) at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat;
+}
+.perf { background-image: linear-gradient(to bottom, var(--color-ash) 40%, transparent 0); background-size: 1px 8px; background-repeat: repeat-y; opacity: .5; }
+
+@keyframes shimmer { 0% { opacity: .35 } 50% { opacity: .6 } 100% { opacity: .35 } }
+.skeleton { background: var(--color-smoke); animation: shimmer 1.6s ease-in-out infinite; border-radius: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

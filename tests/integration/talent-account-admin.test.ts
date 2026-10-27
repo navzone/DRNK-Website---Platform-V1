@@ -176,7 +176,7 @@ describe("Account, privacy and rewards view", () => {
 });
 
 describe("Admin authorization", () => {
-  const adminEndpoints = ["venues", "events", "talents", "applications", "bookings", "support", "data-requests", "audit"];
+  const adminEndpoints = ["users", "venues", "events", "talents", "applications", "bookings", "support", "data-requests", "audit"];
 
   it("rejects anonymous (401) and non-admin (403) callers on every admin list", async () => {
     const cust = await loginAs(DEMO_PHONES.customer, "10.9.0.1");
