@@ -4,7 +4,7 @@ Date: 2026-10-27.
 
 ## Verdict: NOT READY FOR PRODUCTION
 
-The application foundation builds, passes its automated tests, and implements the core flows with server-side authority. It has **not** been deployed, has **not** been tested in a browser, and cannot let a real user log in or pay. Those are not minor gaps. This document does not certify security, legal compliance, or payment correctness.
+The application foundation builds, passes its automated tests, and implements the core flows with server-side authority. It has **not** been deployed, has been browser-tested on Chromium only, and cannot let a real user log in or pay. Those are not minor gaps. This document does not certify security, legal compliance, or payment correctness.
 
 ## Verified (commands were run)
 
@@ -24,8 +24,10 @@ The application foundation builds, passes its automated tests, and implements th
 | Real OTP delivery and login | BLOCKED | No provider; adapter fails closed |
 | Razorpay order creation, Checkout, real webhooks | NOT TESTED | No credentials; Checkout.js step not built |
 | Refund execution | NOT DONE | Rows queued only |
-| Browser e2e (15 Playwright specs) | NOT TESTED | Browser download blocked in sandbox |
-| Responsive / visual review, accessibility audit | NOT TESTED | No browser, no screenshots |
+| Browser e2e on Firefox / Safari (WebKit) | NOT TESTED | Chromium only. Chromium e2e passes (46 passed, 2 skipped) |
+| Accessibility audit (axe/Lighthouse, screen reader, contrast) | NOT TESTED | |
+| Merchant and admin console visual review | NOT TESTED | Restyled by colour tokens only |
+| Real-device and cross-browser visual review | NOT TESTED | Screenshots reviewed at 390, 820 and 1440 px on Chromium only |
 | CI on GitHub | NOT TESTED | Workflow written; no remote repository |
 | Staging deployment | BLOCKED | No platform, domain, database, secrets |
 | Production deployment | BLOCKED | Depends on staging and approvals |
@@ -43,7 +45,7 @@ The application foundation builds, passes its automated tests, and implements th
 1. Real OTP provider integrated and tested end to end.
 2. Razorpay verified in test mode (including webhook replay), checkout UI built, refund handling process defined, then live-mode review.
 3. Staging environment exists and passes the smoke test in `DEPLOYMENT_RUNBOOK.md`.
-4. Browser e2e and a responsive/accessibility pass, with the failures fixed.
+4. Accessibility audit and a cross-browser pass (Firefox, Safari), with failures fixed.
 5. Backups configured and a restore drill completed.
 6. Error monitoring and alerting in place.
 7. Legal pages completed and reviewed by counsel; consent text and retention policy decided.

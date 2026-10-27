@@ -44,7 +44,7 @@ This is an engineering checklist, **not a security certification**. No penetrati
 | Amount/currency mismatch leaves booking pending and is audited | PASS | `booking-payments.test.ts` |
 | Late payment after expiry/cancel queues a refund row, never confirms | PASS | `booking-payments.test.ts` |
 | Overselling impossible under concurrency (conditional UPDATE + CHECK) | PASS | concurrency test; mutation check |
-| Browser redirect is not proof of payment | PASS | status read from DB; e2e spec written, NOT TESTED in a browser |
+| Browser redirect is not proof of payment | PASS | status read from DB; Chromium e2e confirms the booking stays pending until the signed webhook is processed |
 | Sandbox simulator unavailable outside dev/test | PASS | `booking-payments.test.ts` |
 | Razorpay adapter and real webhook payloads | NOT TESTED | No credentials |
 | Refund execution | NOT DONE | |

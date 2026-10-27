@@ -52,14 +52,14 @@ export function BookingActions({ bookingRef, status, hasPendingPayment, sandboxS
         <button disabled={busy} onClick={pay} className={btn}>{hasPendingPayment ? "Start a new payment" : "Pay now"}</button>
         <button disabled={busy} onClick={cancel} className={btnGhost}>Cancel booking</button>
       </div>
-      {info && <p role="status" className="text-sm text-brass">{info}</p>}
+      {info && <p role="status" className="text-sm text-gold">{info}</p>}
       {sandboxSimulator && paymentRef && sandbox && (
-        <div className="rounded-lg border border-brass/40 p-3 text-sm">
-          <p className="text-brass">Development sandbox only. These buttons send a signed test webhook through the real processing path.</p>
+        <div className="rounded-lg border border-gold/40 p-3 text-sm">
+          <p className="text-gold">Development sandbox only. These buttons send a signed test webhook through the real processing path.</p>
           <div className="mt-2 flex gap-2"><button disabled={busy} onClick={() => simulate("captured")} className={btn}>Simulate successful payment</button><button disabled={busy} onClick={() => simulate("failed")} className={btnGhost}>Simulate failed payment</button></div>
         </div>
       )}
-      {error && <p role="alert" className="text-sm text-ember-hi">{error}</p>}
+      {error && <p role="alert" className="text-sm text-rose">{error}</p>}
     </div>
   );
 }

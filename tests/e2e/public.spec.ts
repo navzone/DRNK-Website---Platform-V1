@@ -3,7 +3,7 @@ import { expectNoHorizontalScroll } from "./helpers";
 
 test("Explore loads without authentication and search filters results", async ({ page }) => {
   await page.goto("/explore");
-  await expect(page.getByRole("heading", { name: "Explore Bengaluru" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Venues in Bengaluru" })).toBeVisible();
   await expect(page.getByText(/\d+ venues?/)).toBeVisible();
   await page.getByLabel("Search").fill("taproom");
   await page.getByRole("button", { name: "Apply filters" }).click();
@@ -43,5 +43,5 @@ test("invalid filters show a recoverable message", async ({ page }) => {
   await page.goto("/explore?category=bogus");
   await expect(page.getByText("Those filters aren't valid")).toBeVisible();
   await page.getByRole("link", { name: "Try again" }).click();
-  await expect(page.getByRole("heading", { name: "Explore Bengaluru" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Venues in Bengaluru" })).toBeVisible();
 });

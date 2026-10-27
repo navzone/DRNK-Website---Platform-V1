@@ -35,7 +35,7 @@ Payments run through a local sandbox provider: book tickets, press "Pay now", th
 | --- | --- |
 | `npm run lint`, `npm run typecheck` | Static checks |
 | `npm test` | Unit + integration tests (real Postgres via `TEST_DATABASE_URL`) |
-| `npm run test:e2e` | Playwright (needs `npx playwright install chromium`) |
+| `npm run test:e2e` | Playwright (needs `npx playwright install chromium`, or set `E2E_CHROMIUM_PATH` to an installed Chromium). Needs a built app and a migrated, seeded database in `E2E_DATABASE_URL` |
 | `npm run build`, `npm start` | Production build and server |
 | `npm run db:generate`, `db:migrate`, `db:seed` | Drizzle migrations and demo data |
 | `npx tsx scripts/smoke.ts` | HTTP smoke test against a running server (`BASE_URL`) |
@@ -52,6 +52,7 @@ Payments run through a local sandbox provider: book tickets, press "Pay now", th
 | `docs/DEPLOYMENT_RUNBOOK.md` | Staging/production procedure (not executed) |
 | `docs/PRODUCTION_READINESS.md` | Go/no-go assessment |
 | `docs/API.md` | Endpoint reference |
+| `docs/DESIGN_PORT.md` | What was taken from the AI Studio prototype and what was left out |
 
 ## Ground rules baked into the code
 

@@ -1,38 +1,35 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/server/current-user";
-
-const links = [
-  { href: "/explore", label: "Explore" },
-  { href: "/events", label: "Events" },
-  { href: "/talents", label: "Talent" },
-];
+import { BottomTabs, TopNav } from "./NavLinks";
 
 export async function SiteHeader() {
   const user = await getCurrentUser();
-  const nav = (
-    <>
-      {links.map((l) => (
-        <Link key={l.href} href={l.href} className="py-2 text-paper/80 hover:text-paper">{l.label}</Link>
-      ))}
-      {user?.role === "admin" && <Link href="/admin" className="py-2 text-paper/80 hover:text-paper">Admin</Link>}
-      {(user?.role === "merchant" || user?.role === "admin") && <Link href="/merchant" className="py-2 text-paper/80 hover:text-paper">Merchant</Link>}
-      {user ? (
-        <Link href="/account" className="rounded-full border border-paper/25 px-4 py-2 hover:border-brass">Account</Link>
-      ) : (
-        <Link href="/login" className="rounded-full bg-ember px-4 py-2 font-medium hover:bg-ember-hi">Log in</Link>
-      )}
-    </>
-  );
+  const name = user?.displayName?.trim() || "Account";
+  const initial = (user?.displayName?.trim()?.[0] ?? "D").toUpperCase();
   return (
-    <header className="border-b border-paper/10">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-        <Link href="/" className="font-display text-2xl font-bold tracking-tight">DRNK</Link>
-        <nav aria-label="Main" className="hidden items-center gap-6 sm:flex">{nav}</nav>
-        <details className="relative sm:hidden">
-          <summary className="cursor-pointer list-none rounded-full border border-paper/25 px-4 py-2 text-sm">Menu</summary>
-          <nav aria-label="Main mobile" className="absolute right-0 z-20 mt-2 flex w-56 flex-col gap-1 rounded-xl border border-paper/10 bg-smoke p-4 shadow-xl">{nav}</nav>
-        </details>
-      </div>
-    </header>
+    <>
+      <header className="sticky top-0 z-30 border-b border-snow/10 bg-ink/95 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+          <Link href="/" className="flex items-baseline gap-3" aria-label="DRNK home">
+            <span className="font-display text-2xl font-extrabold tracking-tight text-gold">DRNK</span>
+            <span className="tag hidden text-mist lg:inline">DRINK. REFILL. NETWORK.</span>
+          </Link>
+          <TopNav />
+          <div className="flex items-center gap-2">
+            {user?.role === "admin" && <Link href="/admin" className="hidden rounded-full border border-snow/10 px-3 py-1.5 text-sm text-mist hover:text-snow lg:inline-flex">Admin</Link>}
+            {(user?.role === "merchant" || user?.role === "admin") && <Link href="/merchant" className="hidden rounded-full border border-snow/10 px-3 py-1.5 text-sm text-mist hover:text-snow lg:inline-flex">Merchant</Link>}
+            {user ? (
+              <Link href="/account" className="flex items-center gap-2 rounded-full border border-gold/40 bg-gold/5 py-1 pl-1 pr-3 text-sm font-medium hover:border-gold">
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-gold font-display font-bold text-ink" aria-hidden="true">{initial}</span>
+                <span className="max-w-[8rem] truncate">{name}</span>
+              </Link>
+            ) : (
+              <Link href="/login" className="inline-flex items-center rounded-full bg-gold px-5 py-2 text-sm font-semibold text-ink hover:bg-gold-hi">Log in</Link>
+            )}
+          </div>
+        </div>
+      </header>
+      <BottomTabs profileHref={user ? "/account" : "/login"} />
+    </>
   );
 }

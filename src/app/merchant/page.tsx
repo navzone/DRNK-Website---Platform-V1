@@ -13,7 +13,7 @@ export default async function Merchant() {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/merchant");
   if (user.role !== "merchant" && user.role !== "admin") {
-    return (<><PageTitle title="Merchants only" /><Panel><p className="text-ash">Venue owners can apply to list on DRNK. Applications are reviewed by our team.</p><Link href="/legal/merchant-terms" className="mt-3 inline-block text-brass underline">Read the merchant terms</Link></Panel><MerchantApply /></>);
+    return (<><PageTitle title="Merchants only" /><Panel><p className="text-mist">Venue owners can apply to list on DRNK. Applications are reviewed by our team.</p><Link href="/legal/merchant-terms" className="mt-3 inline-block text-gold underline">Read the merchant terms</Link></Panel><MerchantApply /></>);
   }
   return (<><PageTitle title="Merchant workspace" sub="Manage orders and reservations for your venues. New venues and events appear publicly after approval." /><MerchantConsole /></>);
 }

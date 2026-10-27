@@ -73,7 +73,10 @@ export async function listEvents(raw: unknown) {
   const where = and(eq(schema.events.cityId, city.id), eq(schema.events.status, "approved"), sql`${schema.events.startsAt} > now()`);
   const [count] = await db.select({ n: sql<number>`count(*)::int` }).from(schema.events).where(where);
   const items = await db
-    .select({ slug: schema.events.slug, title: schema.events.title, startsAt: schema.events.startsAt, venueName: schema.venues.name, venueSlug: schema.venues.slug })
+    .select({
+      slug: schema.events.slug, title: schema.events.title, startsAt: schema.events.startsAt, venueName: schema.venues.name, venueSlug: schema.venues.slug,
+      minPricePaise: sql<number | null>`(select min(tt.price_paise) from ticket_types tt where tt.event_id = ${schema.events.id})`,
+    })
     .from(schema.events).innerJoin(schema.venues, eq(schema.venues.id, schema.events.venueId))
     .where(where).orderBy(asc(schema.events.startsAt), asc(schema.events.id)).limit(q.pageSize).offset((q.page - 1) * q.pageSize);
   return { items, page: q.page, pageSize: q.pageSize, total: count?.n ?? 0 };
@@ -93,4 +96,16 @@ export async function getEvent(slug: string) {
     // Remaining count is derived server-side; raw sold/capacity internals are not exposed.
     ticketTypes: types.map((t) => ({ id: t.id, name: t.name, pricePaise: t.pricePaise, remaining: Math.max(0, t.capacity - t.sold) })),
   };
+}
+
+/** Real counts and filters for the home page. Nothing here is hard-coded marketing copy. */
+export async function homeSummary() {
+  const [city] = await db.select().from(schema.cities).where(and(eq(schema.cities.slug, "bengaluru"), eq(schema.cities.active, true))).limit(1);
+  if (!city) return { venues: 0, events: 0, talents: 0, neighbourhoods: [] as string[] };
+  const [v] = await db.select({ n: sql<number>`count(*)::int` }).from(schema.venues).where(and(eq(schema.venues.cityId, city.id), eq(schema.venues.status, "approved")));
+  const [e] = await db.select({ n: sql<number>`count(*)::int` }).from(schema.events).where(and(eq(schema.events.cityId, city.id), eq(schema.events.status, "approved"), sql`${schema.events.startsAt} > now()`));
+  const [t] = await db.select({ n: sql<number>`count(*)::int` }).from(schema.talentProfiles).where(eq(schema.talentProfiles.status, "approved"));
+  const hoods = await db.select({ n: schema.venues.neighbourhood, c: sql<number>`count(*)::int` }).from(schema.venues)
+    .where(and(eq(schema.venues.cityId, city.id), eq(schema.venues.status, "approved"))).groupBy(schema.venues.neighbourhood).orderBy(desc(sql`count(*)`), asc(schema.venues.neighbourhood)).limit(6);
+  return { venues: v?.n ?? 0, events: e?.n ?? 0, talents: t?.n ?? 0, neighbourhoods: hoods.map((h) => h.n).filter(Boolean) as string[] };
 }

@@ -30,20 +30,20 @@ export default async function BookingPage({ params }: { params: Promise<{ ref: s
       <PageTitle title={statusText[booking.status] ?? booking.status} sub={`Booking ${booking.ref}`} />
       <Panel>
         <p className="font-display text-2xl">{event?.title.replace(/\s*\[Demo\]$/, "")}</p>
-        {event && <p className="text-ash">{formatDateTime(event.startsAt)}</p>}
-        <p className="mt-4 flex justify-between border-t border-paper/10 pt-4"><span>Total</span><span className="text-brass">{formatINR(booking.totalPaise)}</span></p>
-        {booking.status === "pending_payment" && <p className="mt-2 text-sm text-ash">Held until {formatDateTime(booking.expiresAt)}. Unpaid bookings are released automatically.</p>}
-        {booking.status === "expired" && <p className="mt-2 text-sm text-ash">This hold ran out and the tickets were released. If a payment was taken, it will be flagged for refund.</p>}
+        {event && <p className="text-mist">{formatDateTime(event.startsAt)}</p>}
+        <p className="mt-4 flex justify-between border-t border-snow/10 pt-4"><span>Total</span><span className="text-gold">{formatINR(booking.totalPaise)}</span></p>
+        {booking.status === "pending_payment" && <p className="mt-2 text-sm text-mist">Held until {formatDateTime(booking.expiresAt)}. Unpaid bookings are released automatically.</p>}
+        {booking.status === "expired" && <p className="mt-2 text-sm text-mist">This hold ran out and the tickets were released. If a payment was taken, it will be flagged for refund.</p>}
         <BookingActions bookingRef={booking.ref} status={booking.status} hasPendingPayment={payments.some((p) => p.status === "pending")} sandboxSimulator={sandboxSimulator} />
       </Panel>
       {payments.length > 0 && (
-        <section className="mt-8"><h2 className="font-display text-2xl">Payments</h2>
-          <ul className="mt-3 space-y-2">{payments.map((p) => <li key={p.ref} className="flex justify-between rounded-lg border border-paper/10 p-3"><span>{p.ref}</span><span className="text-ash">{p.status}, {formatINR(p.amountPaise)}</span></li>)}</ul>
+        <section className="mt-8"><h2 className="font-display text-2xl font-bold">Payments</h2>
+          <ul className="mt-3 space-y-2">{payments.map((p) => <li key={p.ref} className="flex justify-between rounded-xl border border-snow/10 bg-panel p-3"><span>{p.ref}</span><span className="text-mist">{p.status}, {formatINR(p.amountPaise)}</span></li>)}</ul>
         </section>
       )}
       {tickets.length > 0 && (
-        <section className="mt-8"><h2 className="font-display text-2xl">Your tickets</h2>
-          <ul className="mt-3 grid gap-3 sm:grid-cols-2">{tickets.map((t) => <li key={t.ref} className="stub flex items-center gap-4 px-6 py-5"><span className="font-display text-xl text-brass">{t.ref}</span><span className="text-sm text-ash">{lines.length > 1 ? "" : "Admit one"}</span></li>)}</ul>
+        <section className="mt-8"><h2 className="font-display text-2xl font-bold">Your tickets</h2>
+          <ul className="mt-3 grid gap-3 sm:grid-cols-2">{tickets.map((t) => <li key={t.ref} className="flex items-center gap-4 rounded-2xl border border-dashed border-gold/50 bg-panel px-5 py-4"><span className="font-display text-xl text-gold">{t.ref}</span><span className="text-sm text-mist">{lines.length > 1 ? "" : "Admit one"}</span></li>)}</ul>
         </section>
       )}
     </>

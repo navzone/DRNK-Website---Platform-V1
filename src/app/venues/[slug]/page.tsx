@@ -7,7 +7,8 @@ import { AppError } from "@/lib/errors";
 import { categoryLabel, formatDateTime } from "@/lib/format";
 import { ReservationForm } from "@/components/ReservationForm";
 import { OrderPanel } from "@/components/OrderPanel";
-import { Panel, VenueArt } from "@/components/ui";
+import { Clock, MapPin, Sparkles, CalendarDays } from "lucide-react";
+import { Chip, Panel, SectionTitle, VenueArt } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -23,21 +24,40 @@ export default async function VenuePage({ params }: { params: Promise<{ slug: st
   const { venue, branches, offers, menu, events } = data;
   const hours = venue.hours && typeof venue.hours === "object" ? Object.entries(venue.hours as Record<string, string>) : [];
   return (
-    <div className="pt-10">
-      <VenueArt name={venue.name} category={venue.category} />
-      <h1 className="mt-6 font-display text-4xl font-bold sm:text-5xl">{venue.name.replace(/\s*\[Demo\]$/, "")}</h1>
-      <p className="mt-2 text-ash">{categoryLabel[venue.category]}, {venue.neighbourhood}. {venue.cuisines.join(", ")}</p>
-      {venue.description && <p className="mt-4 max-w-prose">{venue.description}</p>}
+    <div className="pt-6 sm:pt-8">
+      <VenueArt name={venue.name} category={venue.category} className="h-44 sm:h-56" />
+      <div className="mt-6 flex flex-wrap items-center gap-2">
+        <Chip>{categoryLabel[venue.category]}</Chip>
+        <Chip tone="neutral">{venue.neighbourhood}</Chip>
+        {venue.dineInEnabled && <Chip tone="jade">Order at your table</Chip>}
+      </div>
+      <h1 className="mt-3 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">{venue.name.replace(/\s*\[Demo\]$/, "")}</h1>
+      {venue.cuisines.length > 0 && <p className="mt-2 text-mist">{venue.cuisines.join(", ")}</p>}
+      {venue.description && <p className="mt-4 max-w-prose text-snow/90">{venue.description}</p>}
 
-      <div className="mt-8 grid gap-6 md:grid-cols-3">
-        <Panel><p className="font-display text-lg">Address</p><p className="mt-2 text-ash">{venue.address}</p></Panel>
-        <Panel><p className="font-display text-lg">Hours</p>{hours.length ? <ul className="mt-2 text-ash">{hours.map(([d, h]) => <li key={d}>{d}: {h}</li>)}</ul> : <p className="mt-2 text-ash">Hours haven&apos;t been listed yet.</p>}</Panel>
-        <Panel><p className="font-display text-lg">Amenities</p>{venue.amenities.length ? <ul className="mt-2 text-ash">{venue.amenities.map((a) => <li key={a}>{a}</li>)}</ul> : <p className="mt-2 text-ash">None listed.</p>}</Panel>
+      <div className="mt-8 grid gap-4 md:grid-cols-3">
+        <Panel><p className="flex items-center gap-2 font-display text-lg font-semibold"><MapPin className="h-4 w-4 text-gold" aria-hidden="true" /> Address</p><p className="mt-2 text-mist">{venue.address}</p></Panel>
+        <Panel><p className="flex items-center gap-2 font-display text-lg font-semibold"><Clock className="h-4 w-4 text-gold" aria-hidden="true" /> Hours</p>{hours.length ? <ul className="mt-2 text-mist">{hours.map(([d, h]) => <li key={d}>{d}: {h}</li>)}</ul> : <p className="mt-2 text-mist">Hours haven&apos;t been listed yet.</p>}</Panel>
+        <Panel><p className="flex items-center gap-2 font-display text-lg font-semibold"><Sparkles className="h-4 w-4 text-gold" aria-hidden="true" /> Amenities</p>{venue.amenities.length ? <ul className="mt-3 flex flex-wrap gap-2">{venue.amenities.map((a) => <li key={a}><Chip tone="neutral">{a}</Chip></li>)}</ul> : <p className="mt-2 text-mist">None listed.</p>}</Panel>
       </div>
 
-      {branches.length > 0 && <section className="mt-10"><h2 className="font-display text-3xl">Branches</h2><ul className="mt-3 space-y-2">{branches.map((b) => <li key={b.id} className="text-ash"><span className="text-paper">{b.name}</span>, {b.address}</li>)}</ul></section>}
-      {offers.length > 0 && <section className="mt-10"><h2 className="font-display text-3xl">Offers</h2><ul className="mt-3 space-y-2">{offers.map((o) => <li key={o.id}><span className="text-brass">{o.title}</span>{o.description && <span className="text-ash"> {o.description}</span>}</li>)}</ul></section>}
-      {events.length > 0 && <section className="mt-10"><h2 className="font-display text-3xl">Upcoming events</h2><ul className="mt-3 space-y-2">{events.map((e) => <li key={e.slug}><Link href={`/events/${e.slug}`} className="text-brass hover:underline">{e.title.replace(/\s*\[Demo\]$/, "")}</Link> <span className="text-ash">{formatDateTime(e.startsAt)}</span></li>)}</ul></section>}
+      {branches.length > 0 && <section className="mt-10"><SectionTitle>Branches</SectionTitle><ul className="space-y-2">{branches.map((b) => <li key={b.id} className="text-mist"><span className="text-snow">{b.name}</span>, {b.address}</li>)}</ul></section>}
+      {offers.length > 0 && <section className="mt-10"><SectionTitle>Offers</SectionTitle><ul className="grid gap-3 sm:grid-cols-2">{offers.map((o) => <li key={o.id} className="rounded-2xl border border-gold/30 bg-gold/5 p-4"><p className="font-semibold text-gold">{o.title}</p>{o.description && <p className="mt-1 text-sm text-mist">{o.description}</p>}</li>)}</ul></section>}
+      {events.length > 0 && (
+        <section className="mt-10">
+          <SectionTitle>Upcoming events</SectionTitle>
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {events.map((e) => (
+              <li key={e.slug}>
+                <Link href={`/events/${e.slug}`} className="flex items-center gap-3 rounded-2xl border border-snow/10 bg-panel p-4 hover:border-gold/60">
+                  <CalendarDays className="h-5 w-5 shrink-0 text-gold" aria-hidden="true" />
+                  <span><span className="block font-semibold">{e.title.replace(/\s*\[Demo\]$/, "")}</span><span className="block text-sm text-mist">{formatDateTime(e.startsAt)}</span></span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <div className="mt-10 grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">

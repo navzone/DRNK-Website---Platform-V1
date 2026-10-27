@@ -30,15 +30,15 @@ export function LoginForm({ next }: { next: string }) {
       {step === "phone" ? (
         <form onSubmit={sendCode} className="space-y-4" aria-label="Log in with mobile number">
           <div><label className={label} htmlFor="phone">Mobile number</label><input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" required placeholder="98765 43210" value={phone} onChange={(e) => setPhone(e.target.value)} className={input} /></div>
-          <p className="text-sm text-ash">By continuing you agree to the <Link href="/legal/terms" className="underline">Terms</Link> and <Link href="/legal/privacy" className="underline">Privacy Policy</Link>.</p>
-          {error && <p role="alert" className="text-sm text-ember-hi">{error}</p>}
+          <p className="text-sm text-mist">By continuing you agree to the <Link href="/legal/terms" className="underline">Terms</Link> and <Link href="/legal/privacy" className="underline">Privacy Policy</Link>.</p>
+          {error && <p role="alert" className="text-sm text-rose">{error}</p>}
           <button disabled={busy} className={btn}>{busy ? "Sending code" : "Send code"}</button>
         </form>
       ) : (
         <form onSubmit={verify} className="space-y-4" aria-label="Enter verification code">
-          <p role="status" className="text-sm text-ash">{note}</p>
+          <p role="status" className="text-sm text-mist">{note}</p>
           <div><label className={label} htmlFor="code">Verification code</label><input id="code" name="code" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} required value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} className={`${input} tracking-[0.4em]`} /></div>
-          {error && <p role="alert" className="text-sm text-ember-hi">{error}</p>}
+          {error && <p role="alert" className="text-sm text-rose">{error}</p>}
           <div className="flex flex-wrap gap-3">
             <button disabled={busy || code.length !== 6} className={btn}>{busy ? "Checking" : "Log in"}</button>
             <button type="button" disabled={busy} onClick={() => sendCode()} className={btnGhost}>Resend code</button>

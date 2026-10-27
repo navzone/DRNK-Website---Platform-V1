@@ -13,9 +13,9 @@ Results below come from commands run in the build sandbox on 2026-10-27. Nothing
 | HTTP smoke | `npx tsx scripts/smoke.ts` against `next start` | PASS | 49 / 49 checks |
 | Dependency audit | `npm audit --omit=dev` | PASS | 0 vulnerabilities in production dependencies; 4 moderate advisories in dev-only tooling remain |
 | Mutation spot-checks | manual | PASS | 5 / 5 deliberate breakages were caught by tests (see below) |
-| Browser e2e | `npm run test:e2e` | NOT TESTED | Specs written. Chromium download was blocked in the sandbox |
-| Visual / responsive review | n/a | NOT TESTED | No screenshots taken; layout is untested in a browser |
-| Accessibility audit | n/a | NOT TESTED | Semantic markup, labels, skip link and focus styles were written but never audited |
+| Browser e2e | `E2E_CHROMIUM_PATH=<chromium> npm run test:e2e` | PASS (Chromium only) | 48 tests (16 specs x desktop/tablet/phone viewports): 46 passed, 2 skipped (the phone-only tab-bar check on tablet and desktop). Firefox and Safari/WebKit NOT TESTED. First full run had 6 failures from a renamed page heading; the tests were corrected and the affected files re-run clean |
+| Visual / responsive review | scripted screenshots | PARTIAL | Home, Dine-In, venue, events, event, talent, talent page, login and account were screenshotted at 390, 820 and 1440 px and looked at by the author; a script found no horizontal overflow on any of them. Merchant and admin consoles were not reviewed visually. No real device testing |
+| Accessibility audit | n/a | NOT TESTED | Labels, skip link, `aria-current` and visible focus are covered by e2e checks, but no axe/Lighthouse run, screen-reader pass or contrast measurement has been done |
 | Load / performance | n/a | NOT TESTED | |
 | Razorpay sandbox | n/a | NOT TESTED | No credentials |
 | Real OTP delivery | n/a | BLOCKED | No provider |

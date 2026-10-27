@@ -18,7 +18,7 @@ export function MerchantApply() {
         <div><label className={label} htmlFor="mb">Business name</label><input id="mb" required minLength={2} value={name} onChange={(e) => setName(e.target.value)} className={input} /></div>
         <div><label className={label} htmlFor="ma">Neighbourhood</label><input id="ma" value={area} onChange={(e) => setArea(e.target.value)} className={input} /></div>
         <div><label className={label} htmlFor="md">Anything we should know?</label><textarea id="md" rows={3} maxLength={1000} value={details} onChange={(e) => setDetails(e.target.value)} className={input} /></div>
-        {msg && <p role={msg.ok ? "status" : "alert"} className={`text-sm ${msg.ok ? "text-brass" : "text-ember-hi"}`}>{msg.text}</p>}
+        {msg && <p role={msg.ok ? "status" : "alert"} className={`text-sm ${msg.ok ? "text-gold" : "text-rose"}`}>{msg.text}</p>}
         <button className={btn}>Submit application</button>
       </form>
     </Panel>

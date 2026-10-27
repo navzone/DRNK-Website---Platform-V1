@@ -1,38 +1,48 @@
 @import "tailwindcss";
 
+/* DRNK design tokens. Near-black navy canvas, gold as the single action colour, mono for small data labels. */
 @theme {
-  --color-char: #1c1b1a;
-  --color-smoke: #272624;
-  --color-ash: #9a958d;
-  --color-paper: #f6f4f0;
-  --color-ember: #b3261e;
-  --color-ember-hi: #cf3a31;
-  --color-brass: #c2a26a;
-  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --color-ink: #0b0d14;
+  --color-panel: #121521;
+  --color-panel-hi: #1a1e2e;
+  --color-mist: #a3a8b5;
+  --color-snow: #f4f4f6;
+  --color-gold: #facc15;
+  --color-gold-hi: #fde047;
+  --color-gold-deep: #d4af37;
+  --color-jade: #34d399;
+  --color-sky: #22d3ee;
+  --color-rose: #f87171;
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-html { color-scheme: dark; }
-body { background: var(--color-char); color: var(--color-paper); font-family: var(--font-sans); }
-
-:focus-visible { outline: 2px solid var(--color-brass); outline-offset: 2px; }
-
-/* Ticket stub: the one memorable shape. Notches are cut with radial masks, no extra markup. */
-.stub {
-  background: var(--color-smoke);
-  --notch: 9px;
-  -webkit-mask:
-    radial-gradient(circle var(--notch) at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat,
-    radial-gradient(circle var(--notch) at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat;
-  mask:
-    radial-gradient(circle var(--notch) at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat,
-    radial-gradient(circle var(--notch) at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat;
+html { color-scheme: dark; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; overflow-x: hidden; }
+body {
+  background: var(--color-ink);
+  color: var(--color-snow);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
-.perf { background-image: linear-gradient(to bottom, var(--color-ash) 40%, transparent 0); background-size: 1px 8px; background-repeat: repeat-y; opacity: .5; }
+h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; }
+
+:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+::selection { background: var(--color-gold-deep); color: var(--color-ink); }
+
+/* Small data label (tags, counters, ids) */
+.tag { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Room for the fixed mobile tab bar plus the iOS home indicator */
+.pb-tabbar { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
 
 @keyframes shimmer { 0% { opacity: .35 } 50% { opacity: .6 } 100% { opacity: .35 } }
-.skeleton { background: var(--color-smoke); animation: shimmer 1.6s ease-in-out infinite; border-radius: 6px; }
+.skeleton { background: var(--color-panel-hi); animation: shimmer 1.6s ease-in-out infinite; border-radius: 12px; }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }

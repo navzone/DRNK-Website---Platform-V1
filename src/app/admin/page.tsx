@@ -13,7 +13,7 @@ export default async function Admin() {
   if (!user) redirect("/login?next=/admin");
   // The UI gate is a convenience. Every admin API re-checks the role on the server.
   if (user.role !== "admin") {
-    return (<><PageTitle title="Admins only" /><Panel><p className="text-ash">Your account doesn&apos;t have access to this area.</p><Link href="/" className="mt-3 inline-block text-brass underline">Back to DRNK</Link></Panel></>);
+    return (<><PageTitle title="Admins only" /><Panel><p className="text-mist">Your account doesn&apos;t have access to this area.</p><Link href="/" className="mt-3 inline-block text-gold underline">Back to DRNK</Link></Panel></>);
   }
   return (<><PageTitle title="Admin" sub="Approve listings, monitor activity and handle requests. Every change is recorded in the audit log." /><AdminConsole /></>);
 }

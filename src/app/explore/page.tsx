@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { searchVenues } from "@/server/explore/venues";
-import { EmptyState, ErrorState, PageTitle, Panel, VenueArt, input, label, btn, btnGhost } from "@/components/ui";
+import { VenueCard } from "@/components/VenueCard";
+import { EmptyState, ErrorState, PageTitle, input, label, btn, btnGhost, pill, pillActive } from "@/components/ui";
 import { categoryLabel } from "@/lib/format";
 import { qs } from "@/lib/qs";
 
@@ -29,8 +30,12 @@ export default async function Explore({ searchParams }: { searchParams: Promise<
 
   return (
     <>
-      <PageTitle title="Explore Bengaluru" sub="Restaurants, pubs and microbreweries." />
-      <form method="get" className="mb-8 grid gap-4 rounded-xl border border-paper/10 bg-smoke p-5 sm:grid-cols-2 lg:grid-cols-4" role="search">
+      <PageTitle tag="DINE-IN" title="Venues in Bengaluru" sub="Reserve a table, or order at your table where a venue offers it." />
+      <nav aria-label="Venue types" className="mb-5 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+        <Link href={`/explore${qs({ ...params, category: undefined, page: undefined })}`} className={!params.category ? pillActive : pill}>All venues</Link>
+        {Object.entries(categoryLabel).map(([k, v]) => <Link key={k} href={`/explore${qs({ ...params, category: k, page: undefined })}`} className={params.category === k ? pillActive : pill}>{v}</Link>)}
+      </nav>
+      <form method="get" className="mb-8 grid gap-4 rounded-2xl border border-snow/10 bg-panel p-5 sm:grid-cols-2 lg:grid-cols-4" role="search">
         <div className="sm:col-span-2">
           <label className={label} htmlFor="q">Search</label>
           <input id="q" name="q" defaultValue={params.q} placeholder="Name, cuisine or neighbourhood" className={input} />
@@ -57,7 +62,7 @@ export default async function Explore({ searchParams }: { searchParams: Promise<
           <label className={label} htmlFor="neighbourhood">Neighbourhood</label>
           <input id="neighbourhood" name="neighbourhood" defaultValue={params.neighbourhood} className={input} />
         </div>
-        <label className="flex items-center gap-2 self-end pb-2.5 text-sm"><input type="checkbox" name="dineIn" value="true" defaultChecked={params.dineIn === "true"} className="h-4 w-4 accent-[#b3261e]" /> Dine-in ordering</label>
+        <label className="flex items-center gap-2 self-end pb-2.5 text-sm"><input type="checkbox" name="dineIn" value="true" defaultChecked={params.dineIn === "true"} className="h-4 w-4 accent-[#facc15]" /> Dine-in ordering</label>
         <div className="flex items-end gap-3">
           <button className={btn}>Apply filters</button>
           <Link href="/explore" className={btnGhost}>Clear</Link>
@@ -71,28 +76,16 @@ export default async function Explore({ searchParams }: { searchParams: Promise<
       )}
       {result && result.items.length > 0 && (
         <>
-          <p className="mb-4 text-sm text-ash" aria-live="polite">{result.total} {result.total === 1 ? "venue" : "venues"}</p>
+          <p className="mb-4 text-sm text-mist" aria-live="polite">{result.total} {result.total === 1 ? "venue" : "venues"}</p>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {result.items.map((v) => (
-              <li key={v.slug}>
-                <Link href={`/venues/${v.slug}`} className="block h-full">
-                  <Panel className="h-full p-3 hover:border-brass">
-                    <VenueArt name={v.name} category={v.category} />
-                    <div className="px-2 pb-2 pt-4">
-                      <p className="font-display text-xl">{v.name.replace(/\s*\[Demo\]$/, "")}</p>
-                      <p className="mt-1 text-sm text-ash">{categoryLabel[v.category]}, {v.neighbourhood}</p>
-                      <p className="mt-1 text-sm text-ash">{v.cuisines.join(", ")}</p>
-                      {v.dineInEnabled && <span className="mt-3 inline-block rounded-full border border-brass/50 px-3 py-0.5 text-xs text-brass">Order at your table</span>}
-                    </div>
-                  </Panel>
-                </Link>
-              </li>
+              <li key={v.slug}><VenueCard v={v} /></li>
             ))}
           </ul>
           {pages > 1 && (
             <nav aria-label="Pagination" className="mt-8 flex items-center gap-4">
               {page > 1 ? <Link href={link(page - 1)} className={btnGhost}>Previous</Link> : <span />}
-              <span className="text-sm text-ash">Page {page} of {pages}</span>
+              <span className="text-sm text-mist">Page {page} of {pages}</span>
               {page < pages && <Link href={link(page + 1)} className={btnGhost}>Next</Link>}
             </nav>
           )}

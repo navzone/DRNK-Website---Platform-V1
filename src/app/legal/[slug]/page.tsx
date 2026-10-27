@@ -19,14 +19,14 @@ export default async function LegalPage({ params }: { params: Promise<{ slug: st
   return (
     <article className="max-w-prose">
       <PageTitle title={page.title} sub={page.summary} />
-      <p role="note" className="mb-8 rounded-lg border border-brass/40 bg-smoke p-4 text-sm text-brass">Draft for review. Not legal advice. Items in square brackets must be supplied by DRNK and reviewed by qualified Indian legal counsel before launch.</p>
+      <p role="note" className="mb-8 rounded-lg border border-gold/40 bg-panel p-4 text-sm text-gold">Draft for review. Not legal advice. Items in square brackets must be supplied by DRNK and reviewed by qualified Indian legal counsel before launch.</p>
       {page.sections.map((s) => (
         <section key={s.heading} className="mb-8">
           <h2 className="font-display text-2xl">{s.heading}</h2>
-          {s.body.map((b, i) => <p key={i} className="mt-2 leading-relaxed text-paper/85">{b}</p>)}
+          {s.body.map((b, i) => <p key={i} className="mt-2 leading-relaxed text-snow/85">{b}</p>)}
         </section>
       ))}
-      {page.slug === "data-requests" && <Link href="/account" className="inline-block rounded-full bg-ember px-5 py-2.5 font-medium hover:bg-ember-hi">Go to my account</Link>}
+      {page.slug === "data-requests" && <Link href="/account" className="inline-block rounded-full bg-gold text-ink px-5 py-2.5 font-medium hover:bg-gold-hi">Go to my account</Link>}
     </article>
   );
 }

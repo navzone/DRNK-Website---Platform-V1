@@ -53,23 +53,23 @@ export function MerchantConsole() {
 
   return (
     <div className="space-y-12">
-      {note && <p role="status" className="text-sm text-brass">{note}</p>}
-      {error && <p role="alert" className="text-sm text-ember-hi">{error}</p>}
+      {note && <p role="status" className="text-sm text-gold">{note}</p>}
+      {error && <p role="alert" className="text-sm text-rose">{error}</p>}
 
       <section><h2 className="font-display text-2xl">Orders</h2>
-        {orders.length === 0 ? <Panel className="mt-3 text-ash">No orders for your venues yet.</Panel> : (
-          <ul className="mt-3 space-y-3">{orders.map((o) => <li key={o.id}><Panel className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-display text-lg">{o.ref}</p><p className="text-sm text-ash">{o.status}, {formatINR(o.totalPaise)}, {formatDateTime(o.createdAt)}</p></div><div className="flex gap-2">{(nextOrder[o.status] ?? []).map((s) => <button key={s} className={s === "cancelled" ? btnGhost : btn} onClick={() => setStatus("orders", o.ref, s)}>{s === "accepted" ? "Accept" : s === "served" ? "Mark served" : "Cancel"}</button>)}</div></Panel></li>)}</ul>
+        {orders.length === 0 ? <Panel className="mt-3 text-mist">No orders for your venues yet.</Panel> : (
+          <ul className="mt-3 space-y-3">{orders.map((o) => <li key={o.id}><Panel className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-display text-lg">{o.ref}</p><p className="text-sm text-mist">{o.status}, {formatINR(o.totalPaise)}, {formatDateTime(o.createdAt)}</p></div><div className="flex gap-2">{(nextOrder[o.status] ?? []).map((s) => <button key={s} className={s === "cancelled" ? btnGhost : btn} onClick={() => setStatus("orders", o.ref, s)}>{s === "accepted" ? "Accept" : s === "served" ? "Mark served" : "Cancel"}</button>)}</div></Panel></li>)}</ul>
         )}
       </section>
 
       <section><h2 className="font-display text-2xl">Reservations</h2>
-        {reservations.length === 0 ? <Panel className="mt-3 text-ash">No reservations yet.</Panel> : (
-          <ul className="mt-3 space-y-3">{reservations.map((r) => <li key={r.id}><Panel className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-display text-lg">{r.ref}</p><p className="text-sm text-ash">{r.partySize} guests, {formatDateTime(r.slotAt)}, {r.status.replace("_", " ")}</p></div><div className="flex flex-wrap gap-2">{(nextRes[r.status] ?? []).map((s) => <button key={s} className={s === "confirmed" ? btn : btnGhost} onClick={() => setStatus("reservations", r.ref, s)}>{s === "confirmed" ? "Confirm" : s === "completed" ? "Mark completed" : s === "no_show" ? "No-show" : "Cancel"}</button>)}</div></Panel></li>)}</ul>
+        {reservations.length === 0 ? <Panel className="mt-3 text-mist">No reservations yet.</Panel> : (
+          <ul className="mt-3 space-y-3">{reservations.map((r) => <li key={r.id}><Panel className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-display text-lg">{r.ref}</p><p className="text-sm text-mist">{r.partySize} guests, {formatDateTime(r.slotAt)}, {r.status.replace("_", " ")}</p></div><div className="flex flex-wrap gap-2">{(nextRes[r.status] ?? []).map((s) => <button key={s} className={s === "confirmed" ? btn : btnGhost} onClick={() => setStatus("reservations", r.ref, s)}>{s === "confirmed" ? "Confirm" : s === "completed" ? "Mark completed" : s === "no_show" ? "No-show" : "Cancel"}</button>)}</div></Panel></li>)}</ul>
         )}
       </section>
 
       <section><h2 className="font-display text-2xl">Your venues</h2>
-        {venues.length > 0 && <ul className="mt-3 space-y-2">{venues.map((v) => <li key={v.id} className="flex justify-between"><span>{v.name}</span><span className="text-brass">{v.status}</span></li>)}</ul>}
+        {venues.length > 0 && <ul className="mt-3 space-y-2">{venues.map((v) => <li key={v.id} className="flex justify-between"><span>{v.name}</span><span className="text-gold">{v.status}</span></li>)}</ul>}
         <Panel className="mt-4"><form onSubmit={createVenue} className="grid gap-4 sm:grid-cols-2" aria-label="Add a venue">
           <div><label className={label} htmlFor="vn">Venue name</label><input id="vn" required minLength={2} value={vName} onChange={(e) => setVName(e.target.value)} className={input} /></div>
           <div><label className={label} htmlFor="vc">Category</label><select id="vc" value={vCategory} onChange={(e) => setVCategory(e.target.value)} className={input}>{["restaurant", "pub", "microbrewery", "lounge", "cafe"].map((c) => <option key={c}>{c}</option>)}</select></div>

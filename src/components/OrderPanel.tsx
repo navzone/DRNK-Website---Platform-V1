@@ -36,26 +36,26 @@ export function OrderPanel({ venueSlug, items, loggedIn, dineIn, sessionsEnabled
 
   return (
     <section aria-labelledby="menu-h">
-      <h2 id="menu-h" className="font-display text-3xl">Menu</h2>
-      {items.length === 0 && <p className="mt-3 text-ash">This venue hasn&apos;t published a menu yet.</p>}
-      <ul className="mt-4 divide-y divide-paper/10 rounded-xl border border-paper/10">
+      <h2 id="menu-h" className="font-display text-3xl font-bold">Menu</h2>
+      {items.length === 0 && <p className="mt-3 text-mist">This venue hasn&apos;t published a menu yet.</p>}
+      <ul className="mt-4 divide-y divide-snow/10 rounded-xl border border-snow/10">
         {items.map((i) => {
           const orderable = dineIn && i.available && !i.containsAlcohol;
           return (
             <li key={i.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
               <div className="min-w-0">
-                <p className={i.available ? "" : "text-ash line-through"}>{i.name}</p>
-                {i.description && <p className="text-sm text-ash">{i.description}</p>}
-                {!i.available && <p className="text-sm text-ash">Unavailable right now</p>}
-                {i.available && i.containsAlcohol && <p className="text-sm text-ash">Not available to order online</p>}
+                <p className={i.available ? "" : "text-mist line-through"}>{i.name}</p>
+                {i.description && <p className="text-sm text-mist">{i.description}</p>}
+                {!i.available && <p className="text-sm text-mist">Unavailable right now</p>}
+                {i.available && i.containsAlcohol && <p className="text-sm text-mist">Not available to order online</p>}
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-brass">{formatINR(i.pricePaise)}</span>
+                <span className="text-gold">{formatINR(i.pricePaise)}</span>
                 {orderable && loggedIn && (
                   <div className="flex items-center gap-2" role="group" aria-label={`Quantity for ${i.name}`}>
-                    <button type="button" aria-label={`Remove one ${i.name}`} disabled={!cart[i.id]} onClick={() => setQty(i.id, (cart[i.id] ?? 0) - 1)} className="h-8 w-8 rounded-full border border-paper/25 disabled:opacity-40">-</button>
+                    <button type="button" aria-label={`Remove one ${i.name}`} disabled={!cart[i.id]} onClick={() => setQty(i.id, (cart[i.id] ?? 0) - 1)} className="h-8 w-8 rounded-full border border-snow/25 disabled:opacity-40">-</button>
                     <span className="w-6 text-center" aria-live="polite">{cart[i.id] ?? 0}</span>
-                    <button type="button" aria-label={`Add one ${i.name}`} onClick={() => setQty(i.id, (cart[i.id] ?? 0) + 1)} className="h-8 w-8 rounded-full border border-paper/25">+</button>
+                    <button type="button" aria-label={`Add one ${i.name}`} onClick={() => setQty(i.id, (cart[i.id] ?? 0) + 1)} className="h-8 w-8 rounded-full border border-snow/25">+</button>
                   </div>
                 )}
               </div>
@@ -64,31 +64,31 @@ export function OrderPanel({ venueSlug, items, loggedIn, dineIn, sessionsEnabled
         })}
       </ul>
 
-      {dineIn && !loggedIn && <p className="mt-4 text-ash"><Link href={`/login?next=/venues/${venueSlug}`} className="text-brass underline">Log in</Link> to order at your table.</p>}
-      {!dineIn && <p className="mt-4 text-ash">This venue doesn&apos;t take dine-in orders through DRNK yet.</p>}
+      {dineIn && !loggedIn && <p className="mt-4 text-mist"><Link href={`/login?next=/venues/${venueSlug}`} className="text-gold underline">Log in</Link> to order at your table.</p>}
+      {!dineIn && <p className="mt-4 text-mist">This venue doesn&apos;t take dine-in orders through DRNK yet.</p>}
 
       {dineIn && loggedIn && (
         <Panel className="mt-6">
           {placed ? (
-            <div role="status"><p className="font-display text-xl">Order placed</p><p className="mt-2">Reference <strong className="text-brass">{placed.ref}</strong>, total {formatINR(placed.totalPaise)}. The venue will accept it shortly.</p><button className={`${btnGhost} mt-4`} onClick={() => setPlaced(null)}>Order more</button></div>
+            <div role="status"><p className="font-display text-xl font-bold">Order placed</p><p className="mt-2">Reference <strong className="text-gold">{placed.ref}</strong>, total {formatINR(placed.totalPaise)}. The venue will accept it shortly.</p><button className={`${btnGhost} mt-4`} onClick={() => setPlaced(null)}>Order more</button></div>
           ) : (
             <>
-              <p className="font-display text-xl">Your order</p>
-              {lines.length === 0 ? <p className="mt-2 text-ash">Add items from the menu to start an order.</p> : (
+              <p className="font-display text-xl font-bold">Your order</p>
+              {lines.length === 0 ? <p className="mt-2 text-mist">Add items from the menu to start an order.</p> : (
                 <>
                   <ul className="mt-3 space-y-1">{lines.map((i) => <li key={i.id} className="flex justify-between"><span>{cart[i.id]} x {i.name}</span><span>{formatINR(i.pricePaise * (cart[i.id] ?? 0))}</span></li>)}</ul>
-                  <p className="mt-3 flex justify-between border-t border-paper/10 pt-3"><span>Estimated total</span><span className="text-brass">{formatINR(estimate)}</span></p>
-                  <p className="mt-1 text-sm text-ash">The final total is confirmed by DRNK when you place the order.</p>
+                  <p className="mt-3 flex justify-between border-t border-snow/10 pt-3"><span>Estimated total</span><span className="text-gold">{formatINR(estimate)}</span></p>
+                  <p className="mt-1 text-sm text-mist">The final total is confirmed by DRNK when you place the order.</p>
                 </>
               )}
               {sessionsEnabled && (
                 <div className="mt-4">
-                  {sessionId ? <p className="text-sm text-brass">Adding to your open table session.</p> : (
+                  {sessionId ? <p className="text-sm text-gold">Adding to your open table session.</p> : (
                     <div className="flex items-end gap-2"><div className="flex-1"><label className={label} htmlFor="tbl">Table (optional)</label><input id="tbl" value={tableLabel} onChange={(e) => setTableLabel(e.target.value)} maxLength={20} className={input} /></div><button type="button" disabled={!tableLabel.trim()} onClick={openSession} className={btnGhost}>Start table session</button></div>
                   )}
                 </div>
               )}
-              {error && <p role="alert" className="mt-3 text-sm text-ember-hi">{error}</p>}
+              {error && <p role="alert" className="mt-3 text-sm text-rose">{error}</p>}
               <div className="mt-4 flex gap-3"><button disabled={busy || lines.length === 0} onClick={place} className={btn}>{busy ? "Placing order" : "Place order"}</button>{lines.length > 0 && <button className={btnGhost} onClick={() => setCart({})}>Clear</button>}</div>
             </>
           )}

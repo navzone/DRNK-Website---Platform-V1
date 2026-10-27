@@ -23,7 +23,8 @@ Legend: DONE = built and covered by automated tests that were run. PARTIAL = bui
 | Admin console | PARTIAL | Approvals, roles, tiers, lists, support, data requests, audit. No MFA |
 | Legal pages | DRAFT | 12 placeholder pages needing counsel review |
 | CI | DONE (not run on GitHub) | `.github/workflows/ci.yml` written; no remote exists |
-| Browser e2e (Playwright) | NOT TESTED | Specs written; browser could not be downloaded in the build sandbox |
+| Browser e2e (Playwright) | PASS on Chromium | 46 passed, 2 skipped. Other browsers not tested |
+| UI design (AI Studio prototype port) | PARTIAL | New look and navigation applied to all public and account pages. See `DESIGN_PORT.md` for what was deliberately not taken |
 | Staging / production deployment | NOT DONE | No platform, domain, or credentials |
 
 ## Test and quality gates at last run
@@ -36,7 +37,7 @@ See `TEST_PLAN.md` for the evidence. Summary: 126/126 Vitest tests pass against 
 2. Choose an OTP/SMS provider (India DLT registration is required for SMS) and implement the `ConfiguredOtpProvider` adapter in `src/server/auth/otp-provider.ts`. Until then, nobody can log in on staging.
 3. Create a Razorpay test account, set `PAYMENT_PROVIDER=razorpay` with test keys on staging, add the Checkout.js step to `BookingActions`, and verify the real webhook (signature header, event ids, payload shape) end to end.
 4. Choose a hosting platform, create the staging environment per `DEPLOYMENT_RUNBOOK.md`, and configure the expiry scheduler.
-5. In an environment that can download browsers, run `npm run test:e2e` and fix any failures; add screenshots at 360, 768 and 1440 px.
+5. Run an accessibility audit and test Firefox and Safari; Chromium e2e already passes.
 6. Have counsel review `src/content/legal.ts` and fill every `[DRNK TO PROVIDE: ...]`.
 
 ## Outstanding decisions (owner: DRNK)

@@ -12,7 +12,7 @@ export default function LegalIndex() {
       <div className="grid gap-3 sm:grid-cols-2">
         {LEGAL_PAGES.map((p) => (
           <Link key={p.slug} href={`/legal/${p.slug}`}>
-            <Panel className="h-full hover:border-brass"><p className="font-display text-xl">{p.title}</p><p className="mt-1 text-ash">{p.summary}</p></Panel>
+            <Panel className="h-full hover:border-gold"><p className="font-display text-xl">{p.title}</p><p className="mt-1 text-mist">{p.summary}</p></Panel>
           </Link>
         ))}
       </div>

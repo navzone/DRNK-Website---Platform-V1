@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { searchTalent } from "@/server/talent/service";
-import { EmptyState, ErrorState, PageTitle, Panel, btn, btnGhost, input, label } from "@/components/ui";
+import { TalentCard } from "@/components/TalentCard";
+import { EmptyState, ErrorState, PageTitle, btn, btnGhost, input, label } from "@/components/ui";
 import { qs } from "@/lib/qs";
 
 export const dynamic = "force-dynamic";
@@ -18,8 +19,8 @@ export default async function Talents({ searchParams }: { searchParams: Promise<
   const pages = result ? Math.max(1, Math.ceil(result.total / result.pageSize)) : 1;
   return (
     <>
-      <PageTitle title="Talent" sub="DJs, KJs and bands approved by DRNK." />
-      <form method="get" className="mb-8 grid gap-4 rounded-xl border border-paper/10 bg-smoke p-5 sm:grid-cols-4" role="search">
+      <PageTitle tag="TALENT & GIGS" title="Who's playing in Bengaluru" sub="DJs, KJs and bands approved by DRNK. Send an enquiry to book." />
+      <form method="get" className="mb-8 grid gap-4 rounded-2xl border border-snow/10 bg-panel p-5 sm:grid-cols-4" role="search">
         <div><label className={label} htmlFor="tq">Name</label><input id="tq" name="q" defaultValue={params.q} className={input} /></div>
         <div><label className={label} htmlFor="kind">Type</label><select id="kind" name="kind" defaultValue={params.kind ?? ""} className={input}><option value="">All</option>{Object.entries(kinds).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
         <div><label className={label} htmlFor="genre">Genre</label><input id="genre" name="genre" defaultValue={params.genre} className={input} /></div>
@@ -32,16 +33,12 @@ export default async function Talents({ searchParams }: { searchParams: Promise<
         <>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {result.items.map((t) => (
-              <li key={t.slug}><Link href={`/talents/${t.slug}`} className="block h-full"><Panel className="h-full hover:border-brass">
-                <p className="font-display text-xl">{t.stageName.replace(/\s*\[Demo\]$/, "")}</p>
-                <p className="mt-1 text-sm text-brass">{kinds[t.kind]}</p>
-                <p className="mt-2 text-sm text-ash">{t.genres.join(", ")}</p>
-              </Panel></Link></li>
+              <li key={t.slug}><TalentCard t={t} /></li>
             ))}
           </ul>
           {pages > 1 && <nav aria-label="Pagination" className="mt-8 flex items-center gap-4">
             {result.page > 1 ? <Link href={`/talents${qs({ ...params, page: result.page - 1 })}`} className={btnGhost}>Previous</Link> : <span />}
-            <span className="text-sm text-ash">Page {result.page} of {pages}</span>
+            <span className="text-sm text-mist">Page {result.page} of {pages}</span>
             {result.page < pages && <Link href={`/talents${qs({ ...params, page: result.page + 1 })}`} className={btnGhost}>Next</Link>}
           </nav>}
         </>

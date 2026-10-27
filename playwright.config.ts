@@ -1,6 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const PORT = 3100;
+// Optional: point at an already-installed Chromium (for sandboxes where `playwright install` cannot download).
+const executablePath = process.env.E2E_CHROMIUM_PATH || undefined;
+const launchOptions = executablePath ? { executablePath } : {};
 
 // Requires a built app (`npm run build`), a migrated + seeded database, and the dev OTP / fake-sandbox adapters.
 export default defineConfig({
@@ -11,9 +14,9 @@ export default defineConfig({
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: { baseURL: `http://localhost:${PORT}`, trace: "retain-on-failure" },
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
-    { name: "tablet", use: { ...devices["iPad (gen 7)"], browserName: "chromium" } },
-    { name: "mobile", use: { ...devices["Pixel 7"] } },
+    { name: "desktop", use: { ...devices["Desktop Chrome"], launchOptions } },
+    { name: "tablet", use: { ...devices["iPad (gen 7)"], browserName: "chromium", launchOptions } },
+    { name: "mobile", use: { ...devices["Pixel 7"], launchOptions } },
   ],
   webServer: {
     command: `npx next start -p ${PORT}`,

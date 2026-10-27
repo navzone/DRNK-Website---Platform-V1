@@ -18,7 +18,7 @@ export function ProfileForm({ displayName, email }: { displayName: string | null
     <form onSubmit={save} className="space-y-4" aria-label="Profile">
       <div><label className={label} htmlFor="pname">Name</label><input id="pname" value={name} maxLength={60} onChange={(e) => setName(e.target.value)} className={input} /></div>
       <div><label className={label} htmlFor="pmail">Email</label><input id="pmail" type="email" value={mail} maxLength={120} onChange={(e) => setMail(e.target.value)} className={input} /></div>
-      {msg && <p role={msg.ok ? "status" : "alert"} className={`text-sm ${msg.ok ? "text-brass" : "text-ember-hi"}`}>{msg.text}</p>}
+      {msg && <p role={msg.ok ? "status" : "alert"} className={`text-sm ${msg.ok ? "text-gold" : "text-rose"}`}>{msg.text}</p>}
       <button className={btn}>Save changes</button>
     </form>
   );
@@ -37,7 +37,7 @@ export function SupportForm() {
     <form onSubmit={send} className="space-y-4" aria-label="Contact support">
       <div><label className={label} htmlFor="ssub">Subject</label><input id="ssub" required minLength={3} maxLength={120} value={subject} onChange={(e) => setSubject(e.target.value)} className={input} /></div>
       <div><label className={label} htmlFor="sbody">What happened?</label><textarea id="sbody" required minLength={10} maxLength={2000} rows={4} value={body} onChange={(e) => setBody(e.target.value)} className={input} /></div>
-      {msg && <p role={msg.ok ? "status" : "alert"} className={`text-sm ${msg.ok ? "text-brass" : "text-ember-hi"}`}>{msg.text}</p>}
+      {msg && <p role={msg.ok ? "status" : "alert"} className={`text-sm ${msg.ok ? "text-gold" : "text-rose"}`}>{msg.text}</p>}
       <button className={btn}>Send request</button>
     </form>
   );
@@ -55,7 +55,7 @@ export function PrivacyActions() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-3"><button onClick={() => request("export")} className={btnGhost}>Request a copy of my data</button><button onClick={() => request("delete")} className={btnGhost}>Request account deletion</button></div>
-      {msg && <p role={msg.ok ? "status" : "alert"} className={`text-sm ${msg.ok ? "text-brass" : "text-ember-hi"}`}>{msg.text}</p>}
+      {msg && <p role={msg.ok ? "status" : "alert"} className={`text-sm ${msg.ok ? "text-gold" : "text-rose"}`}>{msg.text}</p>}
     </div>
   );
 }
@@ -68,5 +68,5 @@ export function LogoutButton() {
 }
 
 export function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return <section className="mt-10"><h2 className="font-display text-2xl">{title}</h2><Panel className="mt-3">{children}</Panel></section>;
+  return <section className="mt-10"><h2 className="font-display text-2xl font-bold">{title}</h2><Panel className="mt-3">{children}</Panel></section>;
 }

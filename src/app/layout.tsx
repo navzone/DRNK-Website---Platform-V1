@@ -11,10 +11,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen antialiased">
-        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-paper focus:px-3 focus:py-2 focus:text-char">Skip to content</a>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" />
+      </head>
+      <body className="pb-tabbar min-h-screen antialiased md:pb-0">
+        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-snow focus:px-3 focus:py-2 focus:text-ink">Skip to content</a>
         <SiteHeader />
-        <main id="main" className="mx-auto max-w-6xl px-4 sm:px-6">{children}</main>
+        <main id="main" className="mx-auto max-w-7xl px-4 sm:px-6">{children}</main>
         <SiteFooter />
       </body>
     </html>
