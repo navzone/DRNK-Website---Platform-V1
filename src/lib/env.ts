@@ -8,6 +8,7 @@ const schema = z.object({
   SESSION_SECRET: z.string().min(32).default("dev-only-session-secret-change-me-0000000"),
   PAYMENT_PROVIDER: z.enum(["fake-sandbox", "razorpay"]).default("fake-sandbox"),
   RAZORPAY_WEBHOOK_SECRET: z.string().default(""),
+  CRON_SECRET: z.string().default(""),
 });
 
 export type Env = z.infer<typeof schema>;

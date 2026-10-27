@@ -67,6 +67,8 @@ export function json(data: unknown, init?: ResponseInit & { cookie?: string }): 
   return Response.json(data, { ...init, headers });
 }
 
+export const notFoundJson = () => json({ error: { code: "not_found", message: "Not found" } }, { status: 404 });
+
 /** Wraps a handler: maps known errors to safe JSON, logs and masks unknown ones. */
 export function handle(
   fn: (req: Request, ctx: { params: Promise<Record<string, string>> }) => Promise<Response>,

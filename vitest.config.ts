@@ -14,6 +14,7 @@ export default defineConfig({
       OTP_PROVIDER: "dev",
       PAYMENT_PROVIDER: "fake-sandbox",
       RAZORPAY_WEBHOOK_SECRET: "test_webhook_secret_not_real",
+      CRON_SECRET: "test_cron_secret_not_real",
     },
   },
 });
