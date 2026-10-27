@@ -68,10 +68,14 @@ export function json(data: unknown, init?: ResponseInit & { cookie?: string }): 
 }
 
 /** Wraps a handler: maps known errors to safe JSON, logs and masks unknown ones. */
-export function handle(fn: (req: Request, ctx: { params: Promise<Record<string, string>> }) => Promise<Response>) {
+export function handle(
+  fn: (req: Request, ctx: { params: Promise<Record<string, string>> }) => Promise<Response>,
+  opts: { skipOriginCheck?: boolean } = {},
+) {
   return async (req: Request, ctx: { params: Promise<Record<string, string>> }): Promise<Response> => {
     try {
-      assertSameOrigin(req);
+      // Server-to-server callbacks (signed webhooks) have no browser Origin; they authenticate by signature instead.
+      if (!opts.skipOriginCheck) assertSameOrigin(req);
       return await fn(req, ctx);
     } catch (err) {
       if (err instanceof AppError) return json({ error: { code: err.code, message: err.message } }, { status: err.status });
