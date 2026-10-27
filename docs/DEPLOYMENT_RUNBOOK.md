@@ -51,6 +51,15 @@ Store them in the platform's secret manager. Do not commit them or paste them in
 9. Configure the Razorpay webhook to `POST {APP_URL}/api/webhooks/payments`, with the same secret as `RAZORPAY_WEBHOOK_SECRET`. Confirm the signature header and event-id header against Razorpay's real deliveries (the adapter is unverified).
 10. Smoke test (below).
 
+## Vercel specifics (chosen platform; NOT yet deployed)
+
+- `vercel.json` sets the build to `scripts/vercel-build.mjs`: it runs forward-only migrations **only when `MIGRATE_ON_BUILD=1`**, then `next build`. Set `MIGRATE_ON_BUILD=1` for the Production environment only, so preview deployments never migrate a database.
+- Use a Postgres with a pooled connection string (for example Neon's pooled URL) and set `DB_POOL_MAX=3` so serverless instances do not exhaust connections.
+- Vercel Cron calls `GET /api/internal/expire-bookings` and sends `Authorization: Bearer $CRON_SECRET` automatically when `CRON_SECRET` is set. The schedule in `vercel.json` is daily (03:00 UTC) because Hobby plans reject anything more frequent. Expired holds are also released lazily on every new booking, so a daily job is a backstop. On Pro, change the schedule to every few minutes.
+- Vercel Postgres/Neon integrations inject `DATABASE_URL`; check that the variable name matches (some integrations add `POSTGRES_URL` instead; copy it into `DATABASE_URL`).
+- Required env vars are listed above. Without a real `OTP_PROVIDER`, the app starts but nobody can log in.
+- The Vercel connector available to Claude is read-only (projects, deployments, logs); environment variables and databases are set in the Vercel dashboard.
+
 ## Staging smoke test
 
 - `GET /api/health` returns ok with database connectivity.

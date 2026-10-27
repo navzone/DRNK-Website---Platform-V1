@@ -24,7 +24,7 @@ import { POST as tierRoute } from "@/app/api/admin/users/[id]/tier/route";
 import { POST as adminTalentPost } from "@/app/api/admin/talents/route";
 import { GET as venuesRoute } from "@/app/api/venues/route";
 import { GET as meRoute } from "@/app/api/me/route";
-import { POST as expireRoute } from "@/app/api/internal/expire-bookings/route";
+import { POST as expireRoute, GET as expireGet } from "@/app/api/internal/expire-bookings/route";
 import { POST as bookingsPost } from "@/app/api/bookings/route";
 import { POST as payRoute } from "@/app/api/bookings/[ref]/pay/route";
 import { POST as simulateRoute } from "@/app/api/dev/simulate-payment/route";
@@ -280,6 +280,10 @@ describe("Operational endpoints", () => {
     const ok = await call(`Bearer ${process.env.CRON_SECRET}`);
     expect(ok.status).toBe(200);
     expect((await ok.json()).expired).toBe(0);
+    // Vercel Cron uses GET; it must be gated by the same secret.
+    const getCall = (auth?: string) => expireGet(new Request(`${ORIGIN}/api/internal/expire-bookings`, { method: "GET", headers: auth ? { authorization: auth } : {} }), none);
+    expect((await getCall()).status).toBe(404);
+    expect((await getCall(`Bearer ${process.env.CRON_SECRET}`)).status).toBe(200);
   });
 
   it("the dev payment simulator drives the real webhook pipeline and only for the payment's owner", async () => {

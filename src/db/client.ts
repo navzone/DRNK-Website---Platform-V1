@@ -6,7 +6,7 @@ import { env } from "@/lib/env";
 const globalForDb = globalThis as unknown as { __drnkPool?: Pool };
 
 function create() {
-  const p = (globalForDb.__drnkPool ??= new Pool({ connectionString: env().DATABASE_URL, max: 10 }));
+  const p = (globalForDb.__drnkPool ??= new Pool({ connectionString: env().DATABASE_URL, max: Number(process.env.DB_POOL_MAX) || 10 }));
   return { pool: p, db: drizzle(p, { schema }) };
 }
 type Instance = ReturnType<typeof create>;
