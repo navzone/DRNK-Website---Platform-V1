@@ -26,7 +26,7 @@ Source: `drnk-platform-new.zip` exported from Google AI Studio (Vite + React sin
 | `drnk-database.json` and the 4,000-line `server.ts` | Left out | Replaced by PostgreSQL, migrations and tested services |
 | Gemini key setup | Left out | No code in the prototype calls Gemini |
 | Merchant KYC (FSSAI, excise licence, GSTIN, PAN, bank details) and admin financial BI | Deferred | Needs a compliance decision and secure document storage. Not in the MVP scope |
-| Unsplash photography (about 400 hot-linked URLs) | Left out | Photos of unrelated places presented as real venues. Venue art is a typographic placeholder until approved images exist |
+| Unsplash photography (about 400 hot-linked URLs) | Ported (reversed) | Originally left out. Now ported at DRNK's request: `src/content/photos.ts` maps the prototype's photo sets to venues (by slug, else by category), events and talent. A photo set on a venue (`venues.imageUrl`) takes priority. The photos are mood stock images hot-linked from Unsplash, so they do not show the real places. If one fails to load, a tinted initials tile appears instead |
 | Trending / video story modals | Deferred | Needs real editorial content and rights |
 
 ## Status of the port
@@ -37,7 +37,8 @@ Source: `drnk-platform-new.zip` exported from Google AI Studio (Vite + React sin
 | Home, Dine-In (venue directory), venue page, events, event page, talent, talent page, login, account, booking | DONE (restyled, wired to the real APIs) |
 | Merchant and admin consoles | PARTIAL: new colours and type, but their layouts are still the earlier simple forms and tables |
 | Prototype's richer screens (weekly gig calendar, "My Passes", venue story modals, area switcher with PIN codes) | NOT DONE: each needs a content or backend decision |
-| Real photography | NOT DONE: awaiting approved images |
+| Stock photography on cards, venue/event galleries, talent and home hero | DONE. Browser-checked with a stand-in image (layout, no overflow, fallback tile when blocked). Real Unsplash loading is NOT TESTED from the build sandbox, which cannot reach Unsplash |
+| Approved real photography per venue, event and artist | NOT DONE: awaiting images. Stock photos must be replaced for every real venue before launch |
 
 ## Decisions needed from DRNK
 

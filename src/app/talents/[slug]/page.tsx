@@ -5,6 +5,8 @@ import { getCurrentUser } from "@/server/current-user";
 import { AppError } from "@/lib/errors";
 import { EnquiryForm } from "@/components/EnquiryForm";
 import { Chip } from "@/components/ui";
+import { ResilientImage } from "@/components/ResilientImage";
+import { talentPhotos } from "@/content/photos";
 
 export const dynamic = "force-dynamic";
 const kinds = { dj: "DJ", kj: "KJ", band: "Band", other: "Other" } as const;
@@ -21,8 +23,9 @@ export default async function TalentPage({ params }: { params: Promise<{ slug: s
   return (
     <div className="grid gap-8 pt-6 sm:pt-8 lg:grid-cols-5 lg:gap-10">
       <div className="lg:col-span-3">
-        <div className="flex items-center gap-5">
-          <span className="grid h-20 w-20 shrink-0 place-items-center rounded-full border border-gold/40 bg-gold/10 font-display text-3xl font-extrabold text-gold" aria-hidden="true">{t.stageName[0]}</span>
+        <ResilientImage src={talentPhotos(t).cover} alt={`${t.stageName.replace(/\s*\[Demo\]$/, "")} performing`} label={t.stageName} className="aspect-[16/8] w-full rounded-2xl" priority />
+        <div className="mt-6 flex items-center gap-5">
+          <ResilientImage src={talentPhotos(t).profile} label={t.stageName} fallbackClass="items-center justify-center text-3xl" className="h-20 w-20 shrink-0 rounded-full border border-gold/40" />
           <div>
             <Chip>{kinds[t.kind]}</Chip>
             <h1 className="mt-2 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">{t.stageName.replace(/\s*\[Demo\]$/, "")}</h1>

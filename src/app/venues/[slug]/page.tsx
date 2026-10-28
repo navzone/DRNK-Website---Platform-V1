@@ -8,7 +8,9 @@ import { categoryLabel, formatDateTime } from "@/lib/format";
 import { ReservationForm } from "@/components/ReservationForm";
 import { OrderPanel } from "@/components/OrderPanel";
 import { Clock, MapPin, Sparkles, CalendarDays } from "lucide-react";
-import { Chip, Panel, SectionTitle, VenueArt } from "@/components/ui";
+import { Chip, Panel, SectionTitle } from "@/components/ui";
+import { Gallery } from "@/components/Gallery";
+import { venueGallery } from "@/content/photos";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +27,7 @@ export default async function VenuePage({ params }: { params: Promise<{ slug: st
   const hours = venue.hours && typeof venue.hours === "object" ? Object.entries(venue.hours as Record<string, string>) : [];
   return (
     <div className="pt-6 sm:pt-8">
-      <VenueArt name={venue.name} category={venue.category} className="h-44 sm:h-56" />
+      <Gallery images={venueGallery(venue)} alt={venue.name.replace(/\s*\[Demo\]$/, "")} label={venue.name} />
       <div className="mt-6 flex flex-wrap items-center gap-2">
         <Chip>{categoryLabel[venue.category]}</Chip>
         <Chip tone="neutral">{venue.neighbourhood}</Chip>

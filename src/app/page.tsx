@@ -7,6 +7,8 @@ import { VenueCard } from "@/components/VenueCard";
 import { TalentCard } from "@/components/TalentCard";
 import { EmptyState, pill } from "@/components/ui";
 import { categoryLabel } from "@/lib/format";
+import { ResilientImage } from "@/components/ResilientImage";
+import { HERO_PHOTO } from "@/content/photos";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +38,10 @@ export default async function Home() {
   ] : [];
   return (
     <>
-      <section className="mt-6 overflow-hidden rounded-3xl border border-snow/10 bg-gradient-to-br from-[#1b1730] via-panel to-ink p-6 sm:mt-8 sm:p-10">
+      <section className="relative mt-6 overflow-hidden rounded-3xl border border-snow/10 bg-gradient-to-br from-[#1b1730] via-panel to-ink p-6 sm:mt-8 sm:p-10">
+        <div className="absolute inset-0 opacity-60" aria-hidden="true"><ResilientImage src={HERO_PHOTO} label="" priority className="h-full w-full" /></div>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/30" />
+        <div className="relative">
         <p className="tag text-gold">BENGALURU</p>
         <h1 className="mt-3 max-w-2xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">Where Bengaluru goes tonight.</h1>
         <p className="mt-4 max-w-xl text-base text-snow/80 sm:text-lg">Reserve a table, order at your table, book event tickets and meet the DJs and bands behind the night.</p>
@@ -62,6 +67,7 @@ export default async function Home() {
             ))}
           </dl>
         )}
+        </div>
       </section>
 
       <section className="mt-6 flex gap-2 overflow-x-auto pb-1 no-scrollbar" aria-label="Venue types">

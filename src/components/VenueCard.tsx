@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { MapPin, UtensilsCrossed } from "lucide-react";
 import { categoryLabel } from "@/lib/format";
-import { Chip, VenueArt } from "./ui";
+import { Chip } from "./ui";
+import { ResilientImage } from "./ResilientImage";
+import { venueGallery } from "@/content/photos";
 
-type V = { slug: string; name: string; category: string; cuisines: string[]; neighbourhood: string; dineInEnabled: boolean };
+type V = { slug: string; name: string; category: string; cuisines: string[]; neighbourhood: string; dineInEnabled: boolean; imageUrl?: string | null };
 
 export function VenueCard({ v }: { v: V }) {
   const name = v.name.replace(/\s*\[Demo\]$/, "");
   return (
     <Link href={`/venues/${v.slug}`} className="group block h-full overflow-hidden rounded-2xl border border-snow/10 bg-panel p-3 transition-colors hover:border-gold/60">
-      <VenueArt name={v.name} category={v.category} />
+      <ResilientImage src={venueGallery(v, "card")[0]!} label={v.name} className="h-44 rounded-xl" />
       <div className="px-2 pb-2 pt-4">
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-display text-lg font-semibold leading-snug group-hover:text-gold">{name}</h3>

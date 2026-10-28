@@ -27,6 +27,7 @@ The application foundation builds, passes its automated tests, and implements th
 | Browser e2e on Firefox / Safari (WebKit) | NOT TESTED | Chromium only. Chromium e2e passes (46 passed, 2 skipped) |
 | Accessibility audit (axe/Lighthouse, screen reader, contrast) | NOT TESTED | |
 | Merchant and admin console visual review | NOT TESTED | Restyled by colour tokens only |
+| Photos load from Unsplash in a real browser | NOT TESTED | Hot-linked stock photos; build sandbox cannot reach Unsplash. Failure fallback was tested by blocking the requests. Replace with approved photography for real venues before launch |
 | Real-device and cross-browser visual review | NOT TESTED | Screenshots reviewed at 390, 820 and 1440 px on Chromium only |
 | CI on GitHub | NOT TESTED | Workflow written; no remote repository |
 | Staging deployment | BLOCKED | No platform, domain, database, secrets |
