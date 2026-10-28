@@ -14,7 +14,7 @@ This is a route inventory generated from the source at the time of writing. For 
 | POST | `/auth/otp/verify` | public | Verify code, create session cookie |
 | POST | `/auth/logout` | user | Revoke the session |
 | GET | `/me` | user | Current user and role |
-| GET | `/health` | public | Liveness and database check |
+| GET | `/health` | public | Settings and database check. 200 `{status:ok, db:ok}` or 503 `{status:degraded, db:down}`. Outside production the 503 also has `reason` (`config` with the setting names at fault, or `database` with the error code) and never any secret |
 
 ## Explore
 

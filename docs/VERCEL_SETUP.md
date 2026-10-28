@@ -46,6 +46,10 @@ With `DEMO_LOGIN=1` and your own `DEMO_LOGIN_CODE`, the login page lists three f
 
 The footer shows `Build <first 7 characters of the commit>`, and `/api/health` returns the same value in `build`. Compare it with the commit on GitHub. If it differs, you are on an older deployment: open the address from Vercel's Deployments tab, not a saved link.
 
+## If the site says "Something went wrong"
+
+Open `/api/health`. If it shows `"db":"down"`, read the `reason` and `detail` next to it: `config` names the setting that is wrong (fix it in Vercel and Redeploy); `database` shows the connection error code (for example `ENOTFOUND` means the database address is wrong, `28P01` means the password is wrong, `ETIMEDOUT` means the database cannot be reached).
+
 ## Photos
 
 The stock photos are downloaded during each build into the site's own files, so pages do not depend on Unsplash at view time. Open `/photos/manifest.json` on the deployed site: it lists how many downloaded and which failed. If the build cannot reach Unsplash, those photos still try the Unsplash address in the browser and then fall back to a tinted tile. Set `SKIP_PHOTO_FETCH=1` to skip the download.
