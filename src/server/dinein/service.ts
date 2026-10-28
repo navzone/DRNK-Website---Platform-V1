@@ -2,6 +2,7 @@ import { and, desc, eq, inArray } from "drizzle-orm";
 import { db, schema } from "@/db/client";
 import { badRequest, conflict, forbidden, notFound } from "@/lib/errors";
 import { randomRef } from "@/lib/crypto";
+import { maskPhone } from "@/lib/phone";
 import { audit } from "@/server/audit";
 import { canTransitionOrder, canTransitionReservation, orderTotalPaise, type OrderStatus, type ReservationStatus } from "./state";
 
@@ -116,10 +117,15 @@ export async function createOrder(userId: string, input: OrderInput) {
 }
 
 export async function getOrderForUser(userId: string, ref: string) {
-  const [o] = await db.select().from(schema.orders).where(and(eq(schema.orders.ref, ref), eq(schema.orders.userId, userId))).limit(1);
-  if (!o) throw notFound("Order not found");
-  const items = await db.select().from(schema.orderItems).where(eq(schema.orderItems.orderId, o.id));
-  return { order: o, items };
+  const [row] = await db
+    .select({ o: schema.orders, venueName: schema.venues.name, venueSlug: schema.venues.slug, tableLabel: schema.tableSessions.tableLabel })
+    .from(schema.orders)
+    .innerJoin(schema.venues, eq(schema.venues.id, schema.orders.venueId))
+    .leftJoin(schema.tableSessions, eq(schema.tableSessions.id, schema.orders.tableSessionId))
+    .where(and(eq(schema.orders.ref, ref), eq(schema.orders.userId, userId))).limit(1);
+  if (!row) throw notFound("Order not found");
+  const items = await db.select().from(schema.orderItems).where(eq(schema.orderItems.orderId, row.o.id));
+  return { order: row.o, items, venue: { name: row.venueName, slug: row.venueSlug }, tableLabel: row.tableLabel ?? null };
 }
 
 export async function listOrdersForUser(userId: string) {
@@ -150,9 +156,25 @@ export async function venueSetOrderStatus(actor: User, ref: string, to: OrderSta
   });
 }
 
+/** Orders for the venues this user manages, newest first, with line items, table and a masked guest phone. */
 export async function listVenueOrders(actor: User) {
   if (actor.role !== "admin" && actor.role !== "merchant") throw forbidden();
   const scope = actor.role === "admin" ? undefined : eq(schema.venues.ownerUserId, actor.id);
-  return db.select({ o: schema.orders }).from(schema.orders).innerJoin(schema.venues, eq(schema.venues.id, schema.orders.venueId)).where(scope).orderBy(desc(schema.orders.createdAt)).limit(200);
+  const rows = await db
+    .select({ o: schema.orders, venueName: schema.venues.name, venueSlug: schema.venues.slug, tableLabel: schema.tableSessions.tableLabel, phone: schema.users.phoneE164 })
+    .from(schema.orders)
+    .innerJoin(schema.venues, eq(schema.venues.id, schema.orders.venueId))
+    .innerJoin(schema.users, eq(schema.users.id, schema.orders.userId))
+    .leftJoin(schema.tableSessions, eq(schema.tableSessions.id, schema.orders.tableSessionId))
+    .where(scope).orderBy(desc(schema.orders.createdAt)).limit(200);
+  const ids = rows.map((r) => r.o.id);
+  const items = ids.length ? await db.select().from(schema.orderItems).where(inArray(schema.orderItems.orderId, ids)) : [];
+  return rows.map((r) => ({
+    ...r.o,
+    venueName: r.venueName,
+    venueSlug: r.venueSlug,
+    tableLabel: r.tableLabel ?? null,
+    guest: maskPhone(r.phone),
+    items: items.filter((i) => i.orderId === r.o.id).map((i) => ({ name: i.nameSnapshot, quantity: i.quantity, unitPricePaise: i.unitPricePaise })),
+  }));
 }
-

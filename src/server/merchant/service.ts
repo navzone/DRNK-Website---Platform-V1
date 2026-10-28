@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { db, schema } from "@/db/client";
 import { badRequest, conflict, notFound } from "@/lib/errors";
 import { randomToken } from "@/lib/crypto";
@@ -49,10 +49,26 @@ export async function createEvent(actor: User, i: { venueSlug: string; title: st
   });
 }
 
-export async function createMenuItem(actor: User, venueSlug: string, i: { name: string; description?: string; pricePaise: number; containsAlcohol?: boolean }) {
+export async function createMenuItem(actor: User, venueSlug: string, i: { name: string; description?: string; pricePaise: number; containsAlcohol?: boolean; category?: string }) {
   const venue = await ownedVenue(actor, venueSlug);
-  const [m] = await db.insert(schema.menuItems).values({ venueId: venue.id, name: i.name, description: i.description, pricePaise: i.pricePaise, containsAlcohol: i.containsAlcohol ?? false }).returning();
+  let categoryId: string | undefined;
+  if (i.category) {
+    const cats = await db.select().from(schema.menuCategories).where(eq(schema.menuCategories.venueId, venue.id));
+    const found = cats.find((c) => c.name.toLowerCase() === i.category!.toLowerCase());
+    categoryId = found?.id ?? (await db.insert(schema.menuCategories).values({ venueId: venue.id, name: i.category, sortOrder: cats.length }).returning())[0]?.id;
+  }
+  const [m] = await db.insert(schema.menuItems).values({ venueId: venue.id, categoryId, name: i.name, description: i.description, pricePaise: i.pricePaise, containsAlcohol: i.containsAlcohol ?? false }).returning();
   return m!;
+}
+
+/** Full menu of a venue the actor manages, including unavailable items. */
+export async function listOwnMenu(actor: User, venueSlug: string) {
+  const venue = await ownedVenue(actor, venueSlug);
+  const [categories, items] = await Promise.all([
+    db.select().from(schema.menuCategories).where(eq(schema.menuCategories.venueId, venue.id)).orderBy(asc(schema.menuCategories.sortOrder)),
+    db.select().from(schema.menuItems).where(eq(schema.menuItems.venueId, venue.id)).orderBy(asc(schema.menuItems.name)),
+  ]);
+  return { venue: { slug: venue.slug, name: venue.name }, categories, items };
 }
 
 export async function setMenuItemAvailability(actor: User, itemId: string, available: boolean) {

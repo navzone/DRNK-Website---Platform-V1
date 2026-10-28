@@ -131,7 +131,11 @@ async function ensureMenu(db: Db, venueId: string, menu: DemoCategory[]) {
   }
 }
 
-export async function seedDemo(db: Db, opts: { withUsers?: boolean } = {}) {
+/**
+ * withUsers: true creates all four fixture accounts (development and test only).
+ * "demo-login" creates only the two demo customers and the demo merchant, for the staging demo login. Never the admin.
+ */
+export async function seedDemo(db: Db, opts: { withUsers?: boolean | "demo-login" } = {}) {
   const withUsers = opts.withUsers ?? true;
   const [city] = await db
     .insert(s.cities)
@@ -155,7 +159,8 @@ export async function seedDemo(db: Db, opts: { withUsers?: boolean } = {}) {
     { phoneE164: DEMO_PHONES.customer2, role: "customer" as const, displayName: "Demo Customer Two" },
     { phoneE164: DEMO_PHONES.merchant, role: "merchant" as const, displayName: "Demo Merchant" },
   ];
-  if (withUsers) for (const u of userRows) await db.insert(s.users).values(u).onConflictDoNothing();
+  // "demo-login" never creates the admin: that account must not be reachable through the staging demo login.
+  if (withUsers) for (const u of userRows) if (withUsers !== "demo-login" || u.role !== "admin") await db.insert(s.users).values(u).onConflictDoNothing();
   const [merchant] = withUsers ? await db.select().from(s.users).where(eq(s.users.phoneE164, DEMO_PHONES.merchant)) : [];
 
   const venueDefs = [
@@ -182,7 +187,7 @@ export async function seedDemo(db: Db, opts: { withUsers?: boolean } = {}) {
         tableSessionsEnabled: v.dineIn,
         status: "approved",
       })
-      .onConflictDoUpdate({ target: s.venues.slug, set: { name: v.name, cuisines: v.cuisines, dineInEnabled: v.dineIn, tableSessionsEnabled: v.dineIn } })
+      .onConflictDoUpdate({ target: s.venues.slug, set: { name: v.name, cuisines: v.cuisines, dineInEnabled: v.dineIn, tableSessionsEnabled: v.dineIn, ...(merchant ? { ownerUserId: merchant.id } : {}) } })
       .returning();
     if (row) venues[v.slug] = row;
   }

@@ -9,3 +9,6 @@ next-env.d.ts
 playwright-report
 test-results
 coverage
+
+# Stock photos downloaded at build time (scripts/fetch-photos.ts)
+/public/photos/

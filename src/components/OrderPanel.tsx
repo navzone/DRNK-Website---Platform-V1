@@ -86,7 +86,7 @@ export function OrderPanel({ venueSlug, items, categories = [], loggedIn, dineIn
       {dineIn && loggedIn && (
         <Panel className="mt-6">
           {placed ? (
-            <div role="status"><p className="font-display text-xl font-bold">Order placed</p><p className="mt-2">Reference <strong className="text-gold">{placed.ref}</strong>, total {formatINR(placed.totalPaise)}. The venue will accept it shortly.</p><button className={`${btnGhost} mt-4`} onClick={() => setPlaced(null)}>Order more</button></div>
+            <div role="status"><p className="font-display text-xl font-bold">Order placed</p><p className="mt-2">Reference <strong className="text-gold">{placed.ref}</strong>, total {formatINR(placed.totalPaise)}. The venue will accept it shortly.</p><div className="mt-4 flex flex-wrap gap-3"><Link href={`/orders/${placed.ref}`} className={btn}>Track this order</Link><button className={btnGhost} onClick={() => setPlaced(null)}>Order more</button></div></div>
           ) : (
             <>
               <p className="font-display text-xl font-bold">Your order</p>

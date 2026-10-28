@@ -2,6 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { remoteFallback } from "@/content/photo-url";
 
 /** Photo carousel for venue and event pages: arrows, dots, swipe, arrow keys. Failed photos show a tinted tile. */
 export function Gallery({ images, alt, label, className = "aspect-[16/10] sm:aspect-[21/9]", badge }: {
@@ -13,8 +14,15 @@ export function Gallery({ images, alt, label, className = "aspect-[16/10] sm:asp
 }) {
   const [i, setI] = useState(0);
   const [failed, setFailed] = useState<Record<number, true>>({});
+  const [useRemote, setUseRemote] = useState<Record<number, true>>({});
   const startX = useRef<number | null>(null);
   const n = images.length;
+  // Bundled copy first, then the original address, then a tile.
+  const onBroken = (k: number) => {
+    if (!useRemote[k] && remoteFallback(images[k] ?? "")) setUseRemote((u) => ({ ...u, [k]: true }));
+    else setFailed((f) => (f[k] ? f : { ...f, [k]: true }));
+  };
+  const srcOf = (k: number) => (useRemote[k] ? remoteFallback(images[k] ?? "") ?? images[k] : images[k]);
   const go = (d: number) => setI((c) => (c + d + n) % n);
   const initials = label.replace(/\s*\[.*\]$/, "").split(" ").slice(0, 2).map((w) => w[0]).join("");
 
@@ -40,15 +48,15 @@ export function Gallery({ images, alt, label, className = "aspect-[16/10] sm:asp
       ) : (
         // eslint-disable-next-line @next/next/no-img-element -- remote stock photos; failure handled by the tile above
         <img
-          key={images[i]}
-          src={images[i]}
+          key={srcOf(i)}
+          src={srcOf(i)}
           alt={`${alt}, photo ${i + 1} of ${n}`}
           loading={i === 0 ? "eager" : "lazy"}
           decoding="async"
           referrerPolicy="no-referrer"
-          onError={() => setFailed((f) => ({ ...f, [i]: true }))}
+          onError={() => onBroken(i)}
           // The error can fire before hydration attaches onError (server-rendered <img>), so check on mount too.
-          ref={(el) => { if (el && el.complete && el.naturalWidth === 0) setFailed((f) => (f[i] ? f : { ...f, [i]: true })); }}
+          ref={(el) => { if (el && el.complete && el.naturalWidth === 0) onBroken(i); }}
           className="h-full w-full object-cover"
         />
       )}

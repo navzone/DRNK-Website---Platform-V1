@@ -76,9 +76,9 @@ This is a route inventory generated from the source at the time of writing. For 
 | POST | `/merchant/applications` | user | Apply to become a merchant |
 | GET, POST | `/merchant/venues` | merchant/admin | Own venues / create (starts pending) |
 | POST | `/merchant/events` | merchant/admin | Create an event on an owned venue (starts pending) |
-| POST | `/merchant/venues/{slug}/menu-items` | merchant/admin | Add a menu item |
+| GET, POST | `/merchant/venues/{slug}/menu-items` | merchant/admin | List own menu / add an item (`category` optional) |
 | POST | `/merchant/menu-items/{id}/availability` | merchant/admin | Toggle availability |
-| GET | `/merchant/orders`, `/merchant/reservations` | merchant/admin | Incoming, scoped to own venues |
+| GET | `/merchant/orders`, `/merchant/reservations` | merchant/admin | Incoming, scoped to own venues. Orders include items, table and masked guest phone |
 | POST | `/merchant/orders/{ref}/status`, `/merchant/reservations/{ref}/status` | merchant/admin | Advance status through allowed transitions |
 
 ## Admin

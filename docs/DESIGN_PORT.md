@@ -26,7 +26,7 @@ Source: `drnk-platform-new.zip` exported from Google AI Studio (Vite + React sin
 | `drnk-database.json` and the 4,000-line `server.ts` | Left out | Replaced by PostgreSQL, migrations and tested services |
 | Gemini key setup | Left out | No code in the prototype calls Gemini |
 | Merchant KYC (FSSAI, excise licence, GSTIN, PAN, bank details) and admin financial BI | Deferred | Needs a compliance decision and secure document storage. Not in the MVP scope |
-| Unsplash photography (about 400 hot-linked URLs) | Ported (reversed) | Originally left out. Now ported at DRNK's request: `src/content/photos.ts` maps the prototype's photo sets to venues (by slug, else by category), events and talent. A photo set on a venue (`venues.imageUrl`) takes priority. The photos are mood stock images hot-linked from Unsplash, so they do not show the real places. If one fails to load, a tinted initials tile appears instead |
+| Unsplash photography (about 400 hot-linked URLs) | Ported (reversed) | Originally left out. Now ported at DRNK's request: `src/content/photos.ts` maps the prototype's photo sets to venues (by slug, else by category), events and talent. A photo set on a venue (`venues.imageUrl`) takes priority. The photos are mood stock images, so they do not show the real places. They are downloaded at build time into `public/photos` (`scripts/fetch-photos.ts`; failures listed in `/photos/manifest.json`) and served from the site itself. If a bundled file is missing the browser tries the Unsplash address, and if that fails a tinted initials tile appears |
 | Trending / video story modals | Deferred | Needs real editorial content and rights |
 
 ## Status of the port

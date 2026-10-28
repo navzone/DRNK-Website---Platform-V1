@@ -19,7 +19,7 @@ Legend: DONE = built and covered by automated tests that were run. PARTIAL = bui
 | Rewards ledgers | PARTIAL | Immutable ledgers, manual tiers, rule-driven earning DONE. No rates/thresholds exist until the approved spec supplies them |
 | Talent directory and enquiries | PARTIAL | Admin creates profiles; no talent self-registration |
 | Account, consents, data requests, support | PARTIAL | Request workflows only; no automated erasure |
-| Merchant workspace | PARTIAL | Orders, reservations, events, venues. Menu management is API only |
+| Merchant workspace | PARTIAL | Tabbed console: live order board (accept, serve, cancel; refreshes every 6 s), reservations, menu (add items, switch on/off), venues and events. No push alerts, no printing, no analytics |
 | Admin console | PARTIAL | Approvals, roles, tiers, lists, support, data requests, audit. No MFA |
 | Legal pages | DRAFT | 12 placeholder pages needing counsel review |
 | CI | DONE (not run on GitHub) | `.github/workflows/ci.yml` written; no remote exists |

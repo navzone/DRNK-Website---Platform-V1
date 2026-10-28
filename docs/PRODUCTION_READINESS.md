@@ -26,7 +26,9 @@ The application foundation builds, passes its automated tests, and implements th
 | Refund execution | NOT DONE | Rows queued only |
 | Browser e2e on Firefox / Safari (WebKit) | NOT TESTED | Chromium only. Chromium e2e passes (46 passed, 2 skipped) |
 | Accessibility audit (axe/Lighthouse, screen reader, contrast) | NOT TESTED | |
-| Merchant and admin console visual review | NOT TESTED | Restyled by colour tokens only |
+| Merchant console visual review | PARTIAL | Tabbed order board and menu manager were screenshotted at desktop width in a real browser and driven end to end (guest orders, merchant accepts, guest sees it). Not reviewed at phone width or on real devices |
+| Admin console visual review | NOT TESTED | Restyled by colour tokens only |
+| Live Vercel site (images, demo login, dine-in flow) | NOT TESTED | The build sandbox cannot reach the deployed site. Checked locally against a production build with staging settings; confirm on the deployed address |
 | Photos load from Unsplash in a real browser | NOT TESTED | Hot-linked stock photos; build sandbox cannot reach Unsplash. Failure fallback was tested by blocking the requests. Replace with approved photography for real venues before launch |
 | Real-device and cross-browser visual review | NOT TESTED | Screenshots reviewed at 390, 820 and 1440 px on Chromium only |
 | CI on GitHub | NOT TESTED | Workflow written; no remote repository |

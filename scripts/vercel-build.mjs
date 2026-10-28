@@ -1,6 +1,7 @@
 // Used by Vercel (package.json "vercel-build"). Optionally applies migrations and demo content, then builds.
 //   MIGRATE_ON_BUILD=1    apply forward-only migrations (Production environment only, never previews)
 //   SEED_DEMO_ON_BUILD=1  load fictional demo venues/events/talent (idempotent; refused when APP_ENV=production)
+//   SKIP_PHOTO_FETCH=1    do not download the stock photos into public/photos
 // Migrations and seeding prefer DATABASE_URL_UNPOOLED (direct connection) when the database integration provides it.
 import { spawnSync } from "node:child_process";
 
@@ -23,4 +24,6 @@ if (wantsMigrate || wantsSeed) {
 } else {
   console.log("MIGRATE_ON_BUILD / SEED_DEMO_ON_BUILD not set: skipping database steps");
 }
+// Bundle the stock photos into the site (never fails the build; pages fall back if any are missing).
+spawnSync("npx", ["tsx", "scripts/fetch-photos.ts"], { stdio: "inherit" });
 run("npx", ["next", "build"]);

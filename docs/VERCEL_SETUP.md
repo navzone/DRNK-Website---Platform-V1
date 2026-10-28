@@ -35,11 +35,24 @@ Add later, not needed to see the site:
 
 ## Demo login (staging only)
 
-With `DEMO_LOGIN=1` and your own `DEMO_LOGIN_CODE`, the login page lists two fictional customer numbers (`9000000002`, `9000000003`). Enter one, press Send code, and type your demo code. Nothing is sent by SMS.
+With `DEMO_LOGIN=1` and your own `DEMO_LOGIN_CODE`, the login page lists three fictional numbers: two customers (`9000000002`, `9000000003`) and one venue owner (`9000000004`, who owns the demo venues and sees the merchant workspace at `/merchant`). Enter one, press Send code, and type your demo code. Nothing is sent by SMS.
 
-- Only those two customer numbers work. The demo admin and merchant numbers, and any real number, are refused.
+- Only those three numbers work. The demo admin number, and any real number, are refused.
+- `APP_ENV` must be `staging` too. If the panel does not appear on the login page, one of `APP_ENV=staging`, `DEMO_LOGIN=1` or `DEMO_LOGIN_CODE` is missing in the environment the site was built from, or you have not redeployed since adding it.
 - It only starts when `APP_ENV=staging`. The app refuses to start with it switched on in production, development or test.
 - Anyone who knows the site address and your code can act as a demo customer. Use a code you have not shared, keep the address private, and switch it off (`DEMO_LOGIN=0`, then redeploy) before real users arrive.
+
+## Checking you are looking at the latest version
+
+The footer shows `Build <first 7 characters of the commit>`, and `/api/health` returns the same value in `build`. Compare it with the commit on GitHub. If it differs, you are on an older deployment: open the address from Vercel's Deployments tab, not a saved link.
+
+## Photos
+
+The stock photos are downloaded during each build into the site's own files, so pages do not depend on Unsplash at view time. Open `/photos/manifest.json` on the deployed site: it lists how many downloaded and which failed. If the build cannot reach Unsplash, those photos still try the Unsplash address in the browser and then fall back to a tinted tile. Set `SKIP_PHOTO_FETCH=1` to skip the download.
+
+## Database connections
+
+The app handles dropped idle connections (Neon closes them) by replacing them rather than crashing. If you still see "Talent didn't load" or "Something went wrong", send the Vercel runtime log for that request (Deployments, the deployment, Logs).
 
 Changing environment variables only affects new deployments: after you change one, open Deployments, open the menu on the latest one, and choose Redeploy.
 

@@ -55,7 +55,7 @@ export default async function Account() {
 
       <Section title="Orders">
         {h.orders.length === 0 ? <Empty>No orders yet.</Empty> : (
-          <ul className="space-y-2">{h.orders.map((o) => <li key={o.id} className="flex justify-between gap-4"><span>{o.ref}</span><span className="text-mist">{o.status}, {formatINR(o.totalPaise)}</span></li>)}</ul>
+          <ul className="space-y-2">{h.orders.map((o) => <li key={o.id} className="flex justify-between gap-4"><Link href={`/orders/${o.ref}`} className="text-gold underline">{o.ref}</Link><span className="text-mist">{o.status}, {formatINR(o.totalPaise)}</span></li>)}</ul>
         )}
       </Section>
 

@@ -46,11 +46,16 @@ export class ConfiguredOtpProvider implements OtpProvider {
   }
 }
 
-/** The only phones the staging demo login accepts: the two fictional demo customers. Never admin or merchant. */
-export const DEMO_LOGIN_PHONES: readonly string[] = ["+919000000002", "+919000000003"];
+/** The only phones the staging demo login accepts: two fictional demo customers and the demo merchant. Never the admin. */
+export const DEMO_LOGIN_PHONES: readonly string[] = ["+919000000002", "+919000000003", "+919000000004"];
+export const DEMO_LOGIN_LABELS: ReadonlyArray<{ phone: string; role: string }> = [
+  { phone: "+919000000002", role: "Customer" },
+  { phone: "+919000000003", role: "Customer 2" },
+  { phone: "+919000000004", role: "Venue (merchant)" },
+];
 
 /**
- * Staging-only: lets a private tester log in as a fictional demo customer with a code the owner chose
+ * Staging-only: lets a private tester log in as a fictional demo customer or demo merchant with a code the owner chose
  * (DEMO_LOGIN_CODE) instead of an SMS. Any other phone falls through to the real provider, which is not wired
  * and fails closed. loadEnv() and this constructor both refuse it outside APP_ENV=staging.
  */

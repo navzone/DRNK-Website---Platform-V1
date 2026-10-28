@@ -7,11 +7,11 @@
  * photography for every real venue before launch (see docs/DESIGN_PORT.md).
  */
 
-const base = "https://images.unsplash.com/photo-";
+import { localPhotoPath } from "./photo-url";
 
-/** Build a sized Unsplash URL, same query shape as the prototype. */
-export function photo(id: string, w = 1000): string {
-  return `${base}${id}?auto=format&fit=crop&w=${w}&q=80`;
+/** Path of a bundled photo (downloaded at build time into /public/photos). */
+export function photo(id: string, w = 1200): string {
+  return localPhotoPath(id, w);
 }
 
 function hash(s: string): number {
@@ -113,11 +113,12 @@ const BY_TALENT_SLUG: Record<string, TalentPhotos> = {
 
 export function talentPhotos(t: { slug: string; kind: string }): { profile: string; cover: string } {
   const p = BY_TALENT_SLUG[t.slug] ?? pick(TALENT[t.kind] ?? TALENT.other!, t.slug);
-  return { profile: photo(p.profile, 600), cover: photo(p.cover, 1200) };
+  return { profile: photo(p.profile, 640), cover: photo(p.cover, 1200) };
 }
 
 /** Wide background for the home hero. */
-export const HERO_PHOTO = photo("1517457373958-b7bdd4587205", 1600);
+const HERO_ID = "1517457373958-b7bdd4587205";
+export const HERO_PHOTO = photo(HERO_ID, 1600);
 
 // ---------- Menu ----------
 const MENU_PHOTO_RULES: ReadonlyArray<[RegExp, string]> = [
@@ -134,8 +135,30 @@ const MENU_PHOTO_RULES: ReadonlyArray<[RegExp, string]> = [
   [/drink|tea/i, "1563227812-0ea4c22e6cc8"],
 ];
 
+const DEFAULT_MENU_PHOTO = "1504674900247-0877df9cc836";
+
 /** Thumbnail for a menu item: matched on its name first, then its category. Mood stock photo, not the actual dish. */
 export function menuPhoto(categoryName: string | null | undefined, itemName: string): string {
   const hit = MENU_PHOTO_RULES.find(([re]) => re.test(itemName)) ?? MENU_PHOTO_RULES.find(([re]) => re.test(categoryName ?? ""));
-  return photo(hit ? hit[1] : "1504674900247-0877df9cc836", 240);
+  return photo(hit ? hit[1] : DEFAULT_MENU_PHOTO, 240);
+}
+
+
+// ---------- Build-time download list ----------
+const SET_IDS = (sets: readonly (readonly string[])[]) => sets.flatMap((x) => [...x]);
+
+/** Every file the site expects under /public/photos: { id, w }. Used by scripts/fetch-photos.ts. */
+export function allPhotoFiles(): { id: string; w: number }[] {
+  const gallery = new Set<string>([
+    ...SET_IDS(Object.values(VENUE_SETS)),
+    ...SET_IDS(EVENT_SETS),
+    ...Object.values(TALENT).flat().flatMap((t) => [t.profile, t.cover]),
+  ]);
+  const menu = new Set<string>([...MENU_PHOTO_RULES.map(([, id]) => id), DEFAULT_MENU_PHOTO]);
+  const files: { id: string; w: number }[] = [];
+  for (const id of gallery) files.push({ id, w: 640 }, { id, w: 1200 });
+  for (const id of menu) files.push({ id, w: 240 });
+  files.push({ id: HERO_ID, w: 1600 });
+  const seen = new Set<string>();
+  return files.filter((f) => { const k = `${f.id}-${f.w}`; if (seen.has(k)) return false; seen.add(k); return true; });
 }

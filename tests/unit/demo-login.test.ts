@@ -27,7 +27,7 @@ describe("demo login provider", () => {
   beforeEach(() => { vi.resetModules(); for (const [k, v] of Object.entries(stage)) vi.stubEnv(k, v); });
   afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); });
 
-  it("serves the owner's code for the two demo customers only", async () => {
+  it("serves the owner's code for the demo customers and the demo merchant only", async () => {
     const m = await import("@/server/auth/otp-provider");
     const p = m.getOtpProvider();
     expect(p).toBeInstanceOf(m.DemoLoginProvider);
@@ -36,10 +36,11 @@ describe("demo login provider", () => {
       await expect(p.send(phone, "482915")).resolves.toBeUndefined();
     }
   });
-  it("never covers the demo admin or merchant, or any real number", async () => {
+  it("covers the demo customers and merchant, never the demo admin or any real number", async () => {
     const m = await import("@/server/auth/otp-provider");
+    expect([...m.DEMO_LOGIN_PHONES].sort()).toEqual(["+919000000002", "+919000000003", "+919000000004"]);
     const p = m.getOtpProvider();
-    for (const phone of ["+919000000001", "+919000000004", "+919876543210"]) {
+    for (const phone of ["+919000000001", "+919876543210"]) {
       expect(m.DEMO_LOGIN_PHONES).not.toContain(phone);
       expect(p.generateCode(phone)).toMatch(/^\d{6}$/);
       await expect(p.send(phone, "000000")).rejects.toMatchObject({ code: "otp_unavailable", status: 503 });
