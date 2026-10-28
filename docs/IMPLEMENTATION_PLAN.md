@@ -9,7 +9,7 @@ Legend: DONE = built and covered by automated tests that were run. PARTIAL = bui
 | Module | Status | Notes |
 | --- | --- | --- |
 | Schema, migrations, seed | DONE | 35 tables, 2 SQL migrations, demo seed (refuses production) |
-| Mobile-OTP auth, sessions, roles | DONE (dev adapter only) | Real SMS/OTP provider NOT wired; login impossible on staging/production until it is |
+| Mobile-OTP auth, sessions, roles | DONE (dev adapter only) | Real SMS/OTP provider NOT wired. On staging only, an optional demo login (`DEMO_LOGIN=1`) lets a tester use two fictional customer accounts. Real users cannot log in until an SMS vendor is wired |
 | Explore (venues, offers, events) | DONE | Public pages and APIs |
 | Reservations | PARTIAL | No capacity model; merchant confirms manually |
 | Dine-in table sessions and orders | PARTIAL | No online payment; alcohol items refused; no API to close a table session |
@@ -29,7 +29,7 @@ Legend: DONE = built and covered by automated tests that were run. PARTIAL = bui
 
 ## Test and quality gates at last run
 
-See `TEST_PLAN.md` for the evidence. Summary: 130/130 Vitest tests pass against real Postgres; lint, typecheck and production build pass; 49/49 HTTP smoke checks pass against `next start`.
+See `TEST_PLAN.md` for the evidence. Summary: 144/144 Vitest tests pass against real Postgres; lint, typecheck and production build pass; 49/49 HTTP smoke checks pass against `next start`.
 
 ## Exact next step
 

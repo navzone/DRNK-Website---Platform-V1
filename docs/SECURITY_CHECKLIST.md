@@ -19,6 +19,7 @@ This is an engineering checklist, **not a security certification**. No penetrati
 | Admin sessions capped at 8 h | PASS | `auth.test.ts` |
 | Dev OTP adapter impossible in staging/production | PASS | `foundation.test.ts` (env guard + constructor guard) |
 | Real OTP delivery | BLOCKED | No provider chosen; adapter fails closed (503) |
+| Staging demo login (`DEMO_LOGIN=1`): only APP_ENV=staging, owner-chosen 6-digit code, only the two demo customer phones; admin, merchant and real numbers refused | PASS | `demo-login` unit and integration tests; mutation check (adding the admin phone makes tests fail). Anyone with the address and code can act as a demo customer. It must be off before real users |
 | Admin MFA | NOT DONE | Decision #13 |
 
 ## Authorization

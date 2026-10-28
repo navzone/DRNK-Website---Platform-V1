@@ -4,11 +4,14 @@ import { useState } from "react";
 import { api } from "@/lib/client-api";
 import { formatINR } from "@/lib/format";
 import { btn, btnGhost, input, label, Panel } from "@/components/ui";
+import { ResilientImage } from "@/components/ResilientImage";
+import { menuPhoto } from "@/content/photos";
 
-type Item = { id: string; name: string; description: string | null; pricePaise: number; available: boolean; containsAlcohol: boolean };
+type Item = { id: string; name: string; description: string | null; pricePaise: number; available: boolean; containsAlcohol: boolean; categoryId: string | null };
+type Category = { id: string; name: string };
 
 /** Cart lives in the browser for convenience only. The server re-reads every price and computes the real total. */
-export function OrderPanel({ venueSlug, items, loggedIn, dineIn, sessionsEnabled }: { venueSlug: string; items: Item[]; loggedIn: boolean; dineIn: boolean; sessionsEnabled: boolean }) {
+export function OrderPanel({ venueSlug, items, categories = [], loggedIn, dineIn, sessionsEnabled }: { venueSlug: string; items: Item[]; categories?: Category[]; loggedIn: boolean; dineIn: boolean; sessionsEnabled: boolean }) {
   const [cart, setCart] = useState<Record<string, number>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,6 +20,11 @@ export function OrderPanel({ venueSlug, items, loggedIn, dineIn, sessionsEnabled
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   const lines = items.filter((i) => cart[i.id]);
+  // Group by category in the venue's order; anything without a category goes last under "More".
+  const groups = [
+    ...categories.map((c) => ({ id: c.id, name: c.name, items: items.filter((i) => i.categoryId === c.id) })),
+    { id: "none", name: "More", items: items.filter((i) => !i.categoryId || !categories.some((c) => c.id === i.categoryId)) },
+  ].filter((g) => g.items.length > 0);
   const estimate = lines.reduce((n, i) => n + i.pricePaise * (cart[i.id] ?? 0), 0);
   const setQty = (id: string, q: number) => setCart((c) => { const n = { ...c }; if (q <= 0) delete n[id]; else n[id] = Math.min(50, q); return n; });
 
@@ -38,31 +46,39 @@ export function OrderPanel({ venueSlug, items, loggedIn, dineIn, sessionsEnabled
     <section aria-labelledby="menu-h">
       <h2 id="menu-h" className="font-display text-3xl font-bold">Menu</h2>
       {items.length === 0 && <p className="mt-3 text-mist">This venue hasn&apos;t published a menu yet.</p>}
-      <ul className="mt-4 divide-y divide-snow/10 rounded-xl border border-snow/10">
-        {items.map((i) => {
-          const orderable = dineIn && i.available && !i.containsAlcohol;
-          return (
-            <li key={i.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
-              <div className="min-w-0">
-                <p className={i.available ? "" : "text-mist line-through"}>{i.name}</p>
-                {i.description && <p className="text-sm text-mist">{i.description}</p>}
-                {!i.available && <p className="text-sm text-mist">Unavailable right now</p>}
-                {i.available && i.containsAlcohol && <p className="text-sm text-mist">Not available to order online</p>}
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-gold">{formatINR(i.pricePaise)}</span>
-                {orderable && loggedIn && (
-                  <div className="flex items-center gap-2" role="group" aria-label={`Quantity for ${i.name}`}>
-                    <button type="button" aria-label={`Remove one ${i.name}`} disabled={!cart[i.id]} onClick={() => setQty(i.id, (cart[i.id] ?? 0) - 1)} className="h-8 w-8 rounded-full border border-snow/25 disabled:opacity-40">-</button>
-                    <span className="w-6 text-center" aria-live="polite">{cart[i.id] ?? 0}</span>
-                    <button type="button" aria-label={`Add one ${i.name}`} onClick={() => setQty(i.id, (cart[i.id] ?? 0) + 1)} className="h-8 w-8 rounded-full border border-snow/25">+</button>
+      {groups.map((g) => (
+        <div key={g.id} className="mt-6">
+          <h3 className="font-display text-xl font-semibold text-gold">{g.name}</h3>
+          <ul className="mt-3 divide-y divide-snow/10 rounded-xl border border-snow/10">
+            {g.items.map((i) => {
+              const orderable = dineIn && i.available && !i.containsAlcohol;
+              return (
+                <li key={i.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <ResilientImage src={menuPhoto(g.name, i.name)} label={i.name} fallbackClass="items-center justify-center text-lg" className={`h-16 w-16 shrink-0 rounded-xl ${i.available ? "" : "opacity-50"}`} />
+                    <div className="min-w-0">
+                      <p className={i.available ? "" : "text-mist line-through"}>{i.name}</p>
+                      {i.description && <p className="text-sm text-mist">{i.description}</p>}
+                      {!i.available && <p className="text-sm text-mist">Unavailable right now</p>}
+                      {i.available && i.containsAlcohol && <p className="text-sm text-mist">Not available to order online</p>}
+                    </div>
                   </div>
-                )}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+                  <div className="flex items-center gap-3">
+                    <span className="text-gold">{formatINR(i.pricePaise)}</span>
+                    {orderable && loggedIn && (
+                      <div className="flex items-center gap-2" role="group" aria-label={`Quantity for ${i.name}`}>
+                        <button type="button" aria-label={`Remove one ${i.name}`} disabled={!cart[i.id]} onClick={() => setQty(i.id, (cart[i.id] ?? 0) - 1)} className="h-8 w-8 rounded-full border border-snow/25 disabled:opacity-40">-</button>
+                        <span className="w-6 text-center" aria-live="polite">{cart[i.id] ?? 0}</span>
+                        <button type="button" aria-label={`Add one ${i.name}`} onClick={() => setQty(i.id, (cart[i.id] ?? 0) + 1)} className="h-8 w-8 rounded-full border border-snow/25">+</button>
+                      </div>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
 
       {dineIn && !loggedIn && <p className="mt-4 text-mist"><Link href={`/login?next=/venues/${venueSlug}`} className="text-gold underline">Log in</Link> to order at your table.</p>}
       {!dineIn && <p className="mt-4 text-mist">This venue doesn&apos;t take dine-in orders through DRNK yet.</p>}

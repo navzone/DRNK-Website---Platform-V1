@@ -11,7 +11,7 @@ The application foundation builds, passes its automated tests, and implements th
 | Item | Status |
 | --- | --- |
 | Lint, typecheck, production build | PASS |
-| 130 unit and integration tests against real PostgreSQL | PASS |
+| 144 unit and integration tests against real PostgreSQL | PASS |
 | 49 HTTP smoke checks against `next start` (login via dev adapter, booking → signed webhook → ticket, cross-user 404, logout) | PASS |
 | 5 deliberate regressions caught by tests (ownership, signature, oversell, CSRF, webhook dedupe) | PASS |
 | `npm audit --omit=dev` | PASS (0); 4 moderate advisories in dev-only tooling |
@@ -43,7 +43,7 @@ The application foundation builds, passes its automated tests, and implements th
 
 ## Launch blockers (must close before real users or money)
 
-1. Real OTP provider integrated and tested end to end.
+1. Real OTP provider integrated and tested end to end, and `DEMO_LOGIN` switched off (the app refuses to start with it on in production).
 2. Razorpay verified in test mode (including webhook replay), checkout UI built, refund handling process defined, then live-mode review.
 3. Staging environment exists and passes the smoke test in `DEPLOYMENT_RUNBOOK.md`.
 4. Accessibility audit and a cross-browser pass (Firefox, Safari), with failures fixed.

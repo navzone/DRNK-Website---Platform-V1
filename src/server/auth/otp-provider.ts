@@ -46,6 +46,31 @@ export class ConfiguredOtpProvider implements OtpProvider {
   }
 }
 
+/** The only phones the staging demo login accepts: the two fictional demo customers. Never admin or merchant. */
+export const DEMO_LOGIN_PHONES: readonly string[] = ["+919000000002", "+919000000003"];
+
+/**
+ * Staging-only: lets a private tester log in as a fictional demo customer with a code the owner chose
+ * (DEMO_LOGIN_CODE) instead of an SMS. Any other phone falls through to the real provider, which is not wired
+ * and fails closed. loadEnv() and this constructor both refuse it outside APP_ENV=staging.
+ */
+export class DemoLoginProvider extends ConfiguredOtpProvider {
+  constructor() {
+    super();
+    const e = env();
+    if (e.APP_ENV !== "staging" || e.DEMO_LOGIN !== "1") throw new Error("DemoLoginProvider is only available when APP_ENV=staging and DEMO_LOGIN=1");
+  }
+  override generateCode(phoneE164?: string) {
+    return phoneE164 && DEMO_LOGIN_PHONES.includes(phoneE164) ? env().DEMO_LOGIN_CODE : randomOtp();
+  }
+  override async send(phoneE164?: string): Promise<void> {
+    if (phoneE164 && DEMO_LOGIN_PHONES.includes(phoneE164)) return; // nothing is sent; the code is known to the owner
+    return super.send();
+  }
+}
+
 export function getOtpProvider(): OtpProvider {
-  return env().OTP_PROVIDER === "dev" ? new DevOtpProvider() : new ConfiguredOtpProvider();
+  const e = env();
+  if (e.OTP_PROVIDER === "dev") return new DevOtpProvider();
+  return e.DEMO_LOGIN === "1" ? new DemoLoginProvider() : new ConfiguredOtpProvider();
 }

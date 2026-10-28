@@ -14,9 +14,14 @@ import { POST as merchantOrderStatus } from "@/app/api/merchant/orders/[ref]/sta
 import { POST as reservationsPost, GET as reservationsGet } from "@/app/api/reservations/route";
 import { POST as reservationCancel } from "@/app/api/reservations/[ref]/cancel/route";
 import { POST as merchantResStatus } from "@/app/api/merchant/reservations/[ref]/status/route";
+import { seedDemo } from "@/db/seed-data";
 import { closeDb, db, DEMO_PHONES, loginAs, makeRequest, resetAndSeed } from "../helpers";
 
-beforeEach(resetAndSeed);
+beforeEach(async () => {
+  await resetAndSeed();
+  // The seeded pub takes dine-in orders too. These tests need one venue that does not, so switch it off here.
+  await db.update(schema.venues).set({ dineInEnabled: false, tableSessionsEnabled: false }).where(eq(schema.venues.slug, "demo-pub"));
+});
 afterAll(closeDb);
 
 const withRef = (ref: string) => ({ params: Promise.resolve({ ref }) });
@@ -78,7 +83,9 @@ describe("Explore (public)", () => {
 
   it("venue detail exposes menu and prices from the server, but not internal owner ids", async () => {
     const body = await (await venueRoute(get("/api/venues/demo-taproom"), withSlug("demo-taproom"))).json();
-    expect(body.menu.items.length).toBe(3);
+    expect(body.menu.items.length).toBe(18);
+    expect(body.menu.categories.map((c: { name: string }) => c.name)).toEqual(["Bites", "Pizza and mains", "Desserts", "Soft drinks", "Craft beers"]);
+    expect(body.menu.items.filter((i: { containsAlcohol: boolean }) => i.containsAlcohol)).toHaveLength(3);
     expect(body.menu.items.find((i: { name: string }) => i.name === "Peri-peri fries").pricePaise).toBe(29900);
     expect(body.venue.ownerUserId).toBeUndefined();
     expect(body.events).toHaveLength(1);
@@ -288,5 +295,47 @@ describe("Reservations", () => {
     expect((await reservationCancel(makeRequest(`/api/reservations/${r1}/cancel`, { cookie: a }), withRef(r1))).status).toBe(200);
     expect((await merchantResStatus(makeRequest(`/api/merchant/reservations/${r1}/status`, { cookie: m, body: { status: "confirmed" } }), withRef(r1))).status).toBe(409); // cancelled is terminal
     expect((await reservationCancel(makeRequest(`/api/reservations/${r1}/cancel`, { cookie: a }), withRef(r1))).status).toBe(409);
+  });
+});
+
+describe("Seeded demo menus", () => {
+  it("gives every demo venue a full menu and dine-in, and re-seeding changes nothing", async () => {
+    await seedDemo(db); // beforeEach switched the pub's dine-in off: re-seeding restores it
+    const count = async () => {
+      const rows = await db.select({ slug: schema.venues.slug, dine: schema.venues.dineInEnabled, sessions: schema.venues.tableSessionsEnabled, id: schema.venues.id }).from(schema.venues);
+      const out: Record<string, { items: number; categories: number; dine: boolean; sessions: boolean }> = {};
+      for (const v of rows) {
+        out[v.slug] = {
+          items: (await db.select().from(schema.menuItems).where(eq(schema.menuItems.venueId, v.id))).length,
+          categories: (await db.select().from(schema.menuCategories).where(eq(schema.menuCategories.venueId, v.id))).length,
+          dine: v.dine, sessions: v.sessions,
+        };
+      }
+      return out;
+    };
+    const first = await count();
+    for (const slug of ["demo-taproom", "demo-kitchen", "demo-pub"]) {
+      expect(first[slug]?.items).toBeGreaterThanOrEqual(10);
+      expect(first[slug]?.categories).toBeGreaterThanOrEqual(4);
+      expect(first[slug]).toMatchObject({ dine: true, sessions: true });
+    }
+    await seedDemo(db);
+    expect(await count()).toEqual(first);
+  });
+
+  it("a customer can order non-alcohol items at each demo venue, and alcohol items are still refused", async () => {
+    await seedDemo(db);
+    const cookie = await loginAs(DEMO_PHONES.customer);
+    for (const slug of ["demo-taproom", "demo-kitchen", "demo-pub"]) {
+      const [v] = await db.select().from(schema.venues).where(eq(schema.venues.slug, slug));
+      const items = await db.select().from(schema.menuItems).where(eq(schema.menuItems.venueId, v!.id));
+      const food = items.find((i) => i.available && !i.containsAlcohol)!;
+      const drink = items.find((i) => i.containsAlcohol)!;
+      const ok = await ordersPost(makeRequest("/api/orders", { cookie, body: { venueSlug: slug, items: [{ menuItemId: food.id, quantity: 2 }] } }), none);
+      expect(ok.status).toBe(201);
+      expect((await ok.json()).order.totalPaise).toBe(food.pricePaise * 2);
+      const refused = await ordersPost(makeRequest("/api/orders", { cookie, body: { venueSlug: slug, items: [{ menuItemId: drink.id, quantity: 1 }] } }), none);
+      expect(refused.status).toBeGreaterThanOrEqual(400);
+    }
   });
 });

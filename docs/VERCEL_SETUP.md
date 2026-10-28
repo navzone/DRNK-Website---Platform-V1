@@ -22,6 +22,8 @@ Vercel project, Settings, Environment Variables. Add each one and tick **Product
 | `MIGRATE_ON_BUILD` | `1` | Creates/updates database tables during the build |
 | `SEED_DEMO_ON_BUILD` | `1` | Loads fictional demo venues, events and talent (no demo accounts) |
 | `DB_POOL_MAX` | `3` | Keeps database connections low on serverless |
+| `DEMO_LOGIN` | `1` (optional, private testing only) | Lets you log in as a fictional demo customer while text messages are not connected. See "Demo login" below. Leave it unset or `0` otherwise |
+| `DEMO_LOGIN_CODE` | a 6-digit code you choose (not `123456`) | The code you type at login. Required when `DEMO_LOGIN=1`. Keep it private |
 
 Add later, not needed to see the site:
 
@@ -30,6 +32,16 @@ Add later, not needed to see the site:
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | When the checkout step is built. Use the Razorpay **test** key pair |
 | `RAZORPAY_WEBHOOK_SECRET` | Same time. Must equal the secret entered in the Razorpay webhook |
 | SMS vendor credentials | When the vendor is chosen (names will be defined with the adapter) |
+
+## Demo login (staging only)
+
+With `DEMO_LOGIN=1` and your own `DEMO_LOGIN_CODE`, the login page lists two fictional customer numbers (`9000000002`, `9000000003`). Enter one, press Send code, and type your demo code. Nothing is sent by SMS.
+
+- Only those two customer numbers work. The demo admin and merchant numbers, and any real number, are refused.
+- It only starts when `APP_ENV=staging`. The app refuses to start with it switched on in production, development or test.
+- Anyone who knows the site address and your code can act as a demo customer. Use a code you have not shared, keep the address private, and switch it off (`DEMO_LOGIN=0`, then redeploy) before real users arrive.
+
+Changing environment variables only affects new deployments: after you change one, open Deployments, open the menu on the latest one, and choose Redeploy.
 
 Never put these values in GitHub, chat, or screenshots.
 

@@ -8,7 +8,7 @@ Results below come from commands run in the build sandbox on 2026-10-27. Nothing
 | --- | --- | --- | --- |
 | Lint | `npm run lint` | PASS | ESLint 9, zero errors |
 | Types | `npm run typecheck` | PASS | TypeScript strict, `noUncheckedIndexedAccess` |
-| Unit + integration | `npm test` | PASS | 130 / 130 tests, 6 files, real PostgreSQL 16 |
+| Unit + integration | `npm test` | PASS | 144 / 144 tests, 8 files, real PostgreSQL 16 |
 | Production build | `npm run build` | PASS | Next.js 16 build, exit 0, with no `DATABASE_URL` set (the DB client is created lazily on first use) |
 | HTTP smoke | `npx tsx scripts/smoke.ts` against `next start` | PASS | 49 / 49 checks |
 | Dependency audit | `npm audit --omit=dev` | PASS | 0 vulnerabilities in production dependencies; 4 moderate advisories in dev-only tooling remain |
@@ -31,6 +31,8 @@ Results below come from commands run in the build sandbox on 2026-10-27. Nothing
 | `tests/integration/auth.test.ts` | 22 | OTP request/verify, throttles, attempt cap, replay, concurrency, sessions, cookies, logout, role expiry, provider guards |
 | `tests/integration/booking-payments.test.ts` | 25 | holds, oversell race, expiry, ticket uniqueness, pricing, webhook signature/replay/mismatch/late payment, rewards idempotency, ownership, simulator gating |
 | `tests/integration/explore-dinein.test.ts` | 34 | public listings, reservations, table sessions, orders (server pricing, alcohol refusal), merchant scope, status transitions |
+| `tests/unit/demo-login.test.ts` | 8 | demo login env rules (staging only, own 6-digit code) and provider behaviour |
+| `tests/integration/demo-login.test.ts` | 4 | real login routes under a staging config with demo login on |
 | `tests/integration/talent-account-admin.test.ts` | 17 | talent enquiries, account/consents/data requests/support, merchant application, admin approvals/roles/tiers, audit |
 | `tests/e2e/*.spec.ts` | 15 specs, each run in 3 viewport projects (desktop, tablet, mobile) | public pages, auth, booking and dine-in flows, responsive nav, keyboard skip link (Playwright; not run) |
 | `scripts/smoke.ts` | 49 checks | login via dev adapter, book → pending → signed webhook → confirmed with ticket, cross-user 404, logout revocation |

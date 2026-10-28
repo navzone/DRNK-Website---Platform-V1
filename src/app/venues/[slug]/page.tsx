@@ -64,7 +64,8 @@ export default async function VenuePage({ params }: { params: Promise<{ slug: st
       <div className="mt-10 grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <OrderPanel venueSlug={venue.slug} loggedIn={!!user} dineIn={venue.dineInEnabled} sessionsEnabled={venue.tableSessionsEnabled}
-            items={menu.items.map((i) => ({ id: i.id, name: i.name, description: i.description, pricePaise: i.pricePaise, available: i.available, containsAlcohol: i.containsAlcohol }))} />
+            categories={menu.categories.map((c) => ({ id: c.id, name: c.name }))}
+            items={menu.items.map((i) => ({ id: i.id, name: i.name, description: i.description, pricePaise: i.pricePaise, available: i.available, containsAlcohol: i.containsAlcohol, categoryId: i.categoryId }))} />
         </div>
         <div><ReservationForm venueSlug={venue.slug} loggedIn={!!user} /></div>
       </div>

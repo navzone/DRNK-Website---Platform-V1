@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LEGAL_PAGES } from "@/content/legal";
+import { buildId } from "@/lib/build-info";
 
 export function SiteFooter() {
   return (
@@ -15,6 +16,7 @@ export function SiteFooter() {
         </nav>
         <p className="mt-8 max-w-prose">Draft policies are placeholders and need review by qualified Indian legal counsel before launch.</p>
         <p className="mt-2 max-w-prose">Alcohol is for adults of legal drinking age only. Please drink responsibly.</p>
+        {buildId() && <p className="tag mt-6 text-mist/70">Build {buildId()}</p>}
       </div>
     </footer>
   );

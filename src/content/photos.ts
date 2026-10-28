@@ -118,3 +118,24 @@ export function talentPhotos(t: { slug: string; kind: string }): { profile: stri
 
 /** Wide background for the home hero. */
 export const HERO_PHOTO = photo("1517457373958-b7bdd4587205", 1600);
+
+// ---------- Menu ----------
+const MENU_PHOTO_RULES: ReadonlyArray<[RegExp, string]> = [
+  [/lassi|chai|coffee|soda|iced tea|\bcola\b|soft drink/i, "1563227812-0ea4c22e6cc8"],
+  [/pizza|risotto|pasta|naan|roti|bread|toast/i, "1513104890138-7c749659a591"],
+  [/burger/i, "1568901346375-23c9450c58cd"],
+  [/steak|grill|lamb|chicken steak/i, "1544025162-d76694265947"],
+  [/biryani|butter chicken|masala|dal |rogan|curry|kebab|tikka|seekh|lollipop|corn|peanut|spring roll|fish/i, "1589302168068-964664d93dc0"],
+  [/fries|nacho|wings|bites|starters|bar bites|platter/i, "1504674900247-0877df9cc836"],
+  [/brownie|cheesecake|dessert|jamun|kulfi|falooda/i, "1551183053-bf91a1d81141"],
+  [/wine/i, "1506377247377-2a5b3b417ebb"],
+  [/whisky|gin|cocktail|mojito|fizz|^bar$/i, "1551024709-8f23befc6f87"],
+  [/beer|ale|stout|lager|pint|craft/i, "1608270195610-8631c360c733"],
+  [/drink|tea/i, "1563227812-0ea4c22e6cc8"],
+];
+
+/** Thumbnail for a menu item: matched on its name first, then its category. Mood stock photo, not the actual dish. */
+export function menuPhoto(categoryName: string | null | undefined, itemName: string): string {
+  const hit = MENU_PHOTO_RULES.find(([re]) => re.test(itemName)) ?? MENU_PHOTO_RULES.find(([re]) => re.test(categoryName ?? ""));
+  return photo(hit ? hit[1] : "1504674900247-0877df9cc836", 240);
+}
