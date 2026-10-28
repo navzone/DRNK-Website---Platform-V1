@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import type { Db } from "./client";
 import * as s from "./schema";
 
@@ -212,9 +212,14 @@ export async function seedDemo(db: Db, opts: { withUsers?: boolean | "demo-login
         startsAt: new Date(Date.now() + 14 * 86400_000),
         status: "approved",
       })
-      .onConflictDoNothing()
+      // Re-seeding must not leave the demo event in the past (public pages only list upcoming events).
+      .onConflictDoUpdate({
+        target: s.events.slug,
+        set: { startsAt: sql`case when ${s.events.startsAt} < now() then excluded.starts_at else ${s.events.startsAt} end` },
+      })
       .returning();
-    if (event) {
+    const hasTickets = event ? (await db.select({ id: s.ticketTypes.id }).from(s.ticketTypes).where(eq(s.ticketTypes.eventId, event.id)).limit(1)).length > 0 : true;
+    if (event && !hasTickets) {
       await db.insert(s.ticketTypes).values([
         { eventId: event.id, name: "General", pricePaise: 49900, capacity: 100 },
         { eventId: event.id, name: "Limited", pricePaise: 99900, capacity: 5 },

@@ -2,13 +2,20 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 async function health(envOverrides: Record<string, string | undefined>) {
   vi.resetModules();
+  // The DB module keeps its pool on globalThis; drop it so each case builds one from its own settings.
+  delete (globalThis as { __drnkPool?: unknown }).__drnkPool;
   for (const [k, v] of Object.entries(envOverrides)) vi.stubEnv(k, v as string);
   const { GET } = await import("@/app/api/health/route");
   const res = await GET();
   return { status: res.status, body: (await res.json()) as Record<string, string> };
 }
 
-afterEach(() => vi.unstubAllEnvs());
+afterEach(async () => {
+  const pool = (globalThis as { __drnkPool?: { end: () => Promise<void> } }).__drnkPool;
+  delete (globalThis as { __drnkPool?: unknown }).__drnkPool;
+  await pool?.end().catch(() => undefined);
+  vi.unstubAllEnvs();
+});
 
 describe("GET /api/health", () => {
   it("names the bad setting when the configuration is invalid (not a database outage)", async () => {
@@ -37,5 +44,16 @@ describe("GET /api/health", () => {
     const r = await health({ APP_ENV: "production", OTP_PROVIDER: "provider", PAYMENT_PROVIDER: "fake-sandbox" });
     expect(r.status).toBe(503);
     expect(r.body).toEqual({ status: "degraded", db: "down" });
+  });
+});
+
+describe("GET /api/health content counts", () => {
+  it("shows row counts outside production and nothing on production", async () => {
+    const r = await health({ APP_ENV: "development", DEMO_LOGIN: "0" });
+    expect(r.status).toBe(200);
+    expect(r.body).toHaveProperty("content");
+    const c = (r.body as unknown as { content: Record<string, unknown> }).content;
+    expect(Object.keys(c).sort()).toEqual(["cities", "menuItems", "talent", "upcomingEvents", "venues"]);
+    for (const v of Object.values(c)) expect(typeof v).toBe("number");
   });
 });

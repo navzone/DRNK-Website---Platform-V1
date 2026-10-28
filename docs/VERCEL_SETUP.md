@@ -50,6 +50,8 @@ The footer shows `Build <first 7 characters of the commit>`, and `/api/health` r
 
 Open `/api/health`. If it shows `"db":"down"`, read the `reason` and `detail` next to it: `config` names the setting that is wrong (fix it in Vercel and Redeploy); `database` shows the connection error code (for example `ENOTFOUND` means the database address is wrong, `28P01` means the password is wrong, `ETIMEDOUT` means the database cannot be reached).
 
+Outside production, `/api/health` also shows a `content` block with row counts (`cities`, `venues`, `menuItems`, `upcomingEvents`, `talent`). If they are 0 or show `error 42P01`, the database is empty or not migrated: check the build log for `migrations applied` and `demo seed complete`, which need `MIGRATE_ON_BUILD=1` and `SEED_DEMO_ON_BUILD=1`.
+
 ## Photos
 
 The stock photos are downloaded during each build into the site's own files, so pages do not depend on Unsplash at view time. Open `/photos/manifest.json` on the deployed site: it lists how many downloaded and which failed. If the build cannot reach Unsplash, those photos still try the Unsplash address in the browser and then fall back to a tinted tile. Set `SKIP_PHOTO_FETCH=1` to skip the download.

@@ -8,7 +8,7 @@ Results below come from commands run in the build sandbox on 2026-10-27. Nothing
 | --- | --- | --- | --- |
 | Lint | `npm run lint` | PASS | ESLint 9, zero errors |
 | Types | `npm run typecheck` | PASS | TypeScript strict, `noUncheckedIndexedAccess` |
-| Unit + integration | `npm test` | PASS | 152 / 152 tests, 10 files, real PostgreSQL 16 |
+| Unit + integration | `npm test` | PASS | 154 / 154 tests, 10 files, real PostgreSQL 16 |
 | Production build | `npm run build` | PASS | Next.js 16 build, exit 0, with no `DATABASE_URL` set (the DB client is created lazily on first use) |
 | HTTP smoke | `npx tsx scripts/smoke.ts` against `next start` | PASS | 49 / 49 checks |
 | Dependency audit | `npm audit --omit=dev` | PASS | 0 vulnerabilities in production dependencies; 4 moderate advisories in dev-only tooling remain |
