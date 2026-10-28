@@ -14,7 +14,9 @@ export const DEMO_PHONES = {
   merchant: "+919000000004",
 };
 
-export async function seedDemo(db: Db) {
+/** `withUsers: false` seeds public demo content only (venues, events, talent) and creates no accounts. Use it anywhere real SMS is on. */
+export async function seedDemo(db: Db, opts: { withUsers?: boolean } = {}) {
+  const withUsers = opts.withUsers ?? true;
   const [city] = await db
     .insert(s.cities)
     .values({ slug: "bengaluru", name: "Bengaluru" })
@@ -37,8 +39,8 @@ export async function seedDemo(db: Db) {
     { phoneE164: DEMO_PHONES.customer2, role: "customer" as const, displayName: "Demo Customer Two" },
     { phoneE164: DEMO_PHONES.merchant, role: "merchant" as const, displayName: "Demo Merchant" },
   ];
-  for (const u of userRows) await db.insert(s.users).values(u).onConflictDoNothing();
-  const [merchant] = await db.select().from(s.users).where(eq(s.users.phoneE164, DEMO_PHONES.merchant));
+  if (withUsers) for (const u of userRows) await db.insert(s.users).values(u).onConflictDoNothing();
+  const [merchant] = withUsers ? await db.select().from(s.users).where(eq(s.users.phoneE164, DEMO_PHONES.merchant)) : [];
 
   const venueDefs = [
     { slug: "demo-taproom", name: "Demo Taproom [Demo]", category: "microbrewery" as const, cuisines: ["Continental", "Bar bites"], neighbourhood: "Indiranagar", dineIn: true },

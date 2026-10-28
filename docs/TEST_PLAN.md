@@ -8,7 +8,7 @@ Results below come from commands run in the build sandbox on 2026-10-27. Nothing
 | --- | --- | --- | --- |
 | Lint | `npm run lint` | PASS | ESLint 9, zero errors |
 | Types | `npm run typecheck` | PASS | TypeScript strict, `noUncheckedIndexedAccess` |
-| Unit + integration | `npm test` | PASS | 126 / 126 tests, 6 files, real PostgreSQL 16 |
+| Unit + integration | `npm test` | PASS | 130 / 130 tests, 6 files, real PostgreSQL 16 |
 | Production build | `npm run build` | PASS | Next.js 16 build, exit 0, with no `DATABASE_URL` set (the DB client is created lazily on first use) |
 | HTTP smoke | `npx tsx scripts/smoke.ts` against `next start` | PASS | 49 / 49 checks |
 | Dependency audit | `npm audit --omit=dev` | PASS | 0 vulnerabilities in production dependencies; 4 moderate advisories in dev-only tooling remain |
@@ -26,7 +26,7 @@ Results below come from commands run in the build sandbox on 2026-10-27. Nothing
 
 | File | Tests | Covers |
 | --- | --- | --- |
-| `tests/unit/foundation.test.ts` | 19 | env guards, phone normalisation/masking, crypto helpers, money formatting, log redaction, ledger-immutability triggers |
+| `tests/unit/foundation.test.ts` | 23 | env guards, same-origin check, phone normalisation/masking, crypto helpers, money formatting, log redaction, ledger-immutability triggers |
 | `tests/unit/state.test.ts` | 9 | dine-in reservation/order/table state machines |
 | `tests/integration/auth.test.ts` | 22 | OTP request/verify, throttles, attempt cap, replay, concurrency, sessions, cookies, logout, role expiry, provider guards |
 | `tests/integration/booking-payments.test.ts` | 25 | holds, oversell race, expiry, ticket uniqueness, pricing, webhook signature/replay/mismatch/late payment, rewards idempotency, ownership, simulator gating |

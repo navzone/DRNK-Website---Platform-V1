@@ -61,3 +61,26 @@ describe("crypto helpers", () => {
     expect(hmacHex("x", "k")).not.toBe(hmacHex("x", "k2"));
   });
 });
+
+describe("same-origin check", () => {
+  const post = (url: string, headers: Record<string, string>) => new Request(url, { method: "POST", headers });
+  const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+  it("accepts the configured public URL", async () => {
+    const { assertSameOrigin } = await import("@/server/api");
+    expect(() => assertSameOrigin(post(`${appUrl}/api/x`, { origin: new URL(appUrl).origin }))).not.toThrow();
+  });
+  it("accepts the origin the request was actually sent to (a second domain alias)", async () => {
+    const { assertSameOrigin } = await import("@/server/api");
+    expect(() => assertSameOrigin(post("https://alias.example.com/api/x", { origin: "https://alias.example.com" }))).not.toThrow();
+  });
+  it("rejects another site, a missing origin, and a lookalike", async () => {
+    const { assertSameOrigin } = await import("@/server/api");
+    expect(() => assertSameOrigin(post("https://alias.example.com/api/x", { origin: "https://evil.example" }))).toThrow();
+    expect(() => assertSameOrigin(post("https://alias.example.com/api/x", {}))).toThrow();
+    expect(() => assertSameOrigin(post("https://alias.example.com/api/x", { origin: "https://alias.example.com.evil.example" }))).toThrow();
+  });
+  it("does not check safe methods", async () => {
+    const { assertSameOrigin } = await import("@/server/api");
+    expect(() => assertSameOrigin(new Request("https://alias.example.com/x", { method: "GET" }))).not.toThrow();
+  });
+});

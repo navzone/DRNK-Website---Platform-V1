@@ -37,11 +37,13 @@ export function clientIp(req: Request): string {
 /** CSRF defence in depth (in addition to SameSite=Lax): state-changing requests must come from our own origin. */
 export function assertSameOrigin(req: Request): void {
   if (["GET", "HEAD", "OPTIONS"].includes(req.method)) return;
-  const allowed = new URL(env().APP_URL).origin;
+  // Same site means the configured public URL or the origin this request was actually sent to (so a second
+  // domain alias of the same deployment keeps working). A page on any other site can never match either.
+  const allowed = new Set([new URL(env().APP_URL).origin, new URL(req.url).origin]);
   const origin = req.headers.get("origin");
   const referer = req.headers.get("referer");
   const seen = origin ?? (referer ? new URL(referer).origin : null);
-  if (seen !== allowed) throw forbidden("Cross-origin request rejected");
+  if (!seen || !allowed.has(seen)) throw forbidden("Cross-origin request rejected");
 }
 
 export async function authenticate(req: Request): Promise<User | null> {

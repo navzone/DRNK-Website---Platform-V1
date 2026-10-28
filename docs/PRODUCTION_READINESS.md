@@ -11,7 +11,7 @@ The application foundation builds, passes its automated tests, and implements th
 | Item | Status |
 | --- | --- |
 | Lint, typecheck, production build | PASS |
-| 126 unit and integration tests against real PostgreSQL | PASS |
+| 130 unit and integration tests against real PostgreSQL | PASS |
 | 49 HTTP smoke checks against `next start` (login via dev adapter, booking → signed webhook → ticket, cross-user 404, logout) | PASS |
 | 5 deliberate regressions caught by tests (ownership, signature, oversell, CSRF, webhook dedupe) | PASS |
 | `npm audit --omit=dev` | PASS (0); 4 moderate advisories in dev-only tooling |

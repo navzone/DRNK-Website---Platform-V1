@@ -29,7 +29,7 @@ Legend: DONE = built and covered by automated tests that were run. PARTIAL = bui
 
 ## Test and quality gates at last run
 
-See `TEST_PLAN.md` for the evidence. Summary: 126/126 Vitest tests pass against real Postgres; lint, typecheck and production build pass; 49/49 HTTP smoke checks pass against `next start`.
+See `TEST_PLAN.md` for the evidence. Summary: 130/130 Vitest tests pass against real Postgres; lint, typecheck and production build pass; 49/49 HTTP smoke checks pass against `next start`.
 
 ## Exact next step
 
