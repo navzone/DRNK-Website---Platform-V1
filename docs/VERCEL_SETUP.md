@@ -83,7 +83,7 @@ Razorpay dashboard, Test mode, Settings, Webhooks, Add. URL `https://<your-site>
 | --- | --- |
 | `/api/health` shows `db: down` | `DATABASE_URL` missing, or Neon database paused or not connected to the project |
 | Build fails with `DATABASE_URL is not set` | `MIGRATE_ON_BUILD`/`SEED_DEMO_ON_BUILD` set but the database is not connected for the Production environment |
-| Build fails with `OTP_PROVIDER=dev is forbidden` | `OTP_PROVIDER` is not `provider`, or `APP_ENV` is wrong |
+| Build fails with `OTP_PROVIDER=dev is forbidden` | `OTP_PROVIDER` is explicitly set to `dev`. Remove it, or set it to `provider`. When unset, staging and production use `provider` automatically |
 | Build fails mentioning `SESSION_SECRET` | Missing or shorter than 32 characters |
 | Site loads but lists are empty | `SEED_DEMO_ON_BUILD` not set at build time. Add it and redeploy |
 | Every form returns "Cross-origin request rejected" | The page is served from an address that is neither `APP_URL` nor the address the request was sent to. Check `APP_URL` |

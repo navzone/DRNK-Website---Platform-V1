@@ -4,7 +4,8 @@ const schema = z.object({
   APP_ENV: z.enum(["development", "test", "staging", "production"]).default("development"),
   APP_URL: z.string().default("http://localhost:3000"),
   DATABASE_URL: z.string().min(1),
-  OTP_PROVIDER: z.enum(["dev", "provider"]).default("dev"),
+  // Unset means "dev" locally and "provider" on staging/production (see loadEnv). The dev adapter is never implied on an internet-facing site.
+  OTP_PROVIDER: z.enum(["dev", "provider"]).optional(),
   SESSION_SECRET: z.string().min(32).default("dev-only-session-secret-change-me-0000000"),
   PAYMENT_PROVIDER: z.enum(["fake-sandbox", "razorpay"]).default("fake-sandbox"),
   RAZORPAY_WEBHOOK_SECRET: z.string().default(""),
@@ -14,11 +15,12 @@ const schema = z.object({
   DEMO_LOGIN_CODE: z.string().default(""),
 });
 
-export type Env = z.infer<typeof schema>;
+export type Env = Omit<z.infer<typeof schema>, "OTP_PROVIDER"> & { OTP_PROVIDER: "dev" | "provider" };
 
 /** Parse and validate environment. Throws on unsafe production configuration. */
 export function loadEnv(source: Record<string, string | undefined> = process.env): Env {
-  const env = schema.parse(source);
+  const parsed = schema.parse(source);
+  const env: Env = { ...parsed, OTP_PROVIDER: parsed.OTP_PROVIDER ?? (parsed.APP_ENV === "staging" || parsed.APP_ENV === "production" ? "provider" : "dev") };
   // The dev OTP adapter uses deterministic fixture codes. It may only run in development/test,
   // never on any internet-facing environment (staging included).
   if (env.OTP_PROVIDER === "dev" && env.APP_ENV !== "development" && env.APP_ENV !== "test") {

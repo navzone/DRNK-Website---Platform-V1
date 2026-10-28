@@ -28,6 +28,9 @@ describe("environment safety", () => {
   it("allows the dev OTP adapter in development and test", () => {
     expect(loadEnv({ ...base, APP_ENV: "development", OTP_PROVIDER: "dev" }).OTP_PROVIDER).toBe("dev");
     expect(loadEnv({ ...base, APP_ENV: "test", OTP_PROVIDER: "dev" }).OTP_PROVIDER).toBe("dev");
+    // Unset: dev locally, never dev on an internet-facing environment.
+    expect(loadEnv({ ...base, APP_ENV: "development" }).OTP_PROVIDER).toBe("dev");
+    expect(loadEnv({ ...base, APP_ENV: "staging", SESSION_SECRET: "x".repeat(40) }).OTP_PROVIDER).toBe("provider");
   });
   it("forbids the fake payment provider and default secret in production", () => {
     expect(() => loadEnv({ ...base, APP_ENV: "production", OTP_PROVIDER: "provider", PAYMENT_PROVIDER: "fake-sandbox" })).toThrow(/fake-sandbox/);
