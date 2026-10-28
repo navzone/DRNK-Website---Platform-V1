@@ -19,6 +19,12 @@ describe("GET /api/health", () => {
     expect(r.body.detail).toContain("DEMO_LOGIN=1 is only allowed when APP_ENV=staging");
   });
 
+  it("lists every invalid setting at once", async () => {
+    const r = await health({ APP_ENV: "staging", OTP_PROVIDER: "dev", DEMO_LOGIN: "1", DEMO_LOGIN_CODE: "123456", SESSION_SECRET: "dev-only-session-secret-change-me-0000000" });
+    expect(r.body.reason).toBe("config");
+    for (const name of ["OTP_PROVIDER=dev", "DEMO_LOGIN_CODE", "SESSION_SECRET"]) expect(r.body.detail).toContain(name);
+  });
+
   it("reports only the error code when the database cannot be reached, never the connection string", async () => {
     const r = await health({ APP_ENV: "development", DEMO_LOGIN: "0", DATABASE_URL: "postgres://user:s3cretpw@nonexistent.invalid:5432/x" });
     expect(r.status).toBe(503);

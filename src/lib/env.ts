@@ -21,25 +21,27 @@ export type Env = Omit<z.infer<typeof schema>, "OTP_PROVIDER"> & { OTP_PROVIDER:
 export function loadEnv(source: Record<string, string | undefined> = process.env): Env {
   const parsed = schema.parse(source);
   const env: Env = { ...parsed, OTP_PROVIDER: parsed.OTP_PROVIDER ?? (parsed.APP_ENV === "staging" || parsed.APP_ENV === "production" ? "provider" : "dev") };
+  // Collect every problem so one health check or one redeploy shows all of them, not one at a time.
+  const problems: string[] = [];
   // The dev OTP adapter uses deterministic fixture codes. It may only run in development/test,
   // never on any internet-facing environment (staging included).
   if (env.OTP_PROVIDER === "dev" && env.APP_ENV !== "development" && env.APP_ENV !== "test") {
-    throw new Error(`OTP_PROVIDER=dev is forbidden when APP_ENV=${env.APP_ENV}`);
+    problems.push(`OTP_PROVIDER=dev is forbidden when APP_ENV=${env.APP_ENV}`);
   }
   if (env.DEMO_LOGIN === "1") {
-    // Fixed-code login for two fictional customer phones. Only for a private staging check, never production.
-    if (env.APP_ENV !== "staging") throw new Error(`DEMO_LOGIN=1 is only allowed when APP_ENV=staging (got ${env.APP_ENV})`);
+    // Fixed-code login for fictional demo phones. Only for a private staging check, never production.
+    if (env.APP_ENV !== "staging") problems.push(`DEMO_LOGIN=1 is only allowed when APP_ENV=staging (got ${env.APP_ENV})`);
     if (!/^\d{6}$/.test(env.DEMO_LOGIN_CODE) || env.DEMO_LOGIN_CODE === "123456") {
-      throw new Error("DEMO_LOGIN_CODE must be a 6-digit code of your own choosing (not 123456) when DEMO_LOGIN=1");
+      problems.push("DEMO_LOGIN_CODE must be a 6-digit code of your own choosing (not 123456) when DEMO_LOGIN=1");
     }
   }
-  if (env.APP_ENV === "production") {
-    if (env.PAYMENT_PROVIDER === "fake-sandbox") throw new Error("PAYMENT_PROVIDER=fake-sandbox is forbidden when APP_ENV=production");
-    if (env.SESSION_SECRET.startsWith("dev-only")) throw new Error("SESSION_SECRET must be set to a real value in production");
+  if (env.APP_ENV === "production" && env.PAYMENT_PROVIDER === "fake-sandbox") {
+    problems.push("PAYMENT_PROVIDER=fake-sandbox is forbidden when APP_ENV=production");
   }
-  if (env.APP_ENV === "staging" && env.SESSION_SECRET.startsWith("dev-only")) {
-    throw new Error("SESSION_SECRET must be set to a real value in staging");
+  if ((env.APP_ENV === "production" || env.APP_ENV === "staging") && env.SESSION_SECRET.startsWith("dev-only")) {
+    problems.push(`SESSION_SECRET must be set to a real value in ${env.APP_ENV}`);
   }
+  if (problems.length) throw new Error(problems.join("; "));
   return env;
 }
 
